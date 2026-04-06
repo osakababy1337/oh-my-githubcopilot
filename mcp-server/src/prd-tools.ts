@@ -83,33 +83,33 @@ export function registerPrdTools(server: McpServer): void {
     "omg_create_prd",
     "Create a new PRD with title, description, and stories",
     {
-      prd: z.string().describe("JSON string of PRD: {title, description, stories: [{id, title, description, acceptance_criteria, priority}]}"),
+      title: z.string().describe("PRD title"),
+      description: z.string().optional().describe("PRD description"),
+      stories: z
+        .array(
+          z.object({
+            id: z.string().optional().describe("Story ID (auto-generated if omitted)"),
+            title: z.string().describe("Story title"),
+            description: z.string().optional().describe("Story description"),
+            acceptance_criteria: z.array(z.string()).optional().describe("List of acceptance criteria"),
+            priority: z.number().optional().describe("Priority (0 = default)"),
+          })
+        )
+        .optional()
+        .describe("User stories for the PRD"),
     },
-    async ({ prd: prdJson }) => {
-      const parseResult = safeJsonParse(prdJson);
-      if (!parseResult.ok) {
-        return errorResponse(parseResult.error);
-      }
-      const input = parseResult.data;
-
-      if (!input.title || typeof input.title !== "string") {
-        return errorResponse("PRD requires a 'title' string field");
-      }
-      if (input.stories && !Array.isArray(input.stories)) {
-        return errorResponse("PRD 'stories' must be an array");
-      }
-
-      const stories = Array.isArray(input.stories) ? input.stories : [];
+    async ({ title, description, stories: inputStories }) => {
+      const stories = inputStories ?? [];
       const prd: Prd = {
-        title: input.title,
-        description: typeof input.description === "string" ? input.description : "",
-        stories: stories.map((s: Partial<Story>) => ({
+        title,
+        description: description ?? "",
+        stories: stories.map((s) => ({
           id: s.id || `story-${generateId()}`,
-          title: s.title || "Untitled",
-          description: s.description || "",
-          acceptance_criteria: s.acceptance_criteria || [],
+          title: s.title,
+          description: s.description ?? "",
+          acceptance_criteria: s.acceptance_criteria ?? [],
           passes: false,
-          priority: s.priority || 0,
+          priority: s.priority ?? 0,
         })),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
