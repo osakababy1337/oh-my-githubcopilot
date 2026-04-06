@@ -54,6 +54,13 @@ Si OMC potencia Claude Code mediante agentes especializados y automatización de
 
 ## Inicio rápido
 
+### Requisitos previos
+
+- VS Code con GitHub Copilot Chat habilitado
+- Soporte de agent mode o agent customization disponible en tu entorno de Copilot
+- Node.js y npm instalados para compilar localmente el servidor MCP
+- Abrir el proyecto como workspace confiable para que MCP, prompts y archivos de personalización carguen correctamente
+
 ### 1. Clonar
 
 ```bash

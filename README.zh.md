@@ -54,6 +54,13 @@
 
 ## Quick Start
 
+### 前置条件
+
+- 已启用 GitHub Copilot Chat 的 VS Code
+- 你的 Copilot 环境支持 agent mode 或 agent customization
+- 已安装 Node.js 和 npm，以便在本地构建 MCP 服务器
+- 以受信任工作区方式打开项目，确保 MCP、prompts 和自定义文件正常加载
+
 ### 1. 克隆仓库
 
 ```bash

@@ -54,6 +54,13 @@ OMC가 Claude Code를 특화된 에이전트와 워크플로 자동화로 확장
 
 ## 빠른 시작
 
+### 사전 조건
+
+- GitHub Copilot Chat이 활성화된 VS Code
+- Copilot 환경에서 agent mode 또는 agent customization 지원 가능 상태
+- MCP 서버를 로컬에서 빌드할 수 있도록 Node.js와 npm 설치
+- MCP, 프롬프트, 커스터마이징 파일이 정상 로드되도록 신뢰된 워크스페이스로 열기
+
 ### 1. 클론
 
 ```bash

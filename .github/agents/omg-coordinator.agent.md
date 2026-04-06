@@ -27,7 +27,7 @@ You coordinate the following agent team:
 - **@test-engineer** - Test strategy and TDD workflows
 - **@designer** - UI/UX design and implementation
 - **@writer** - Technical documentation
-- **@qa-tester** - Interactive CLI testing via tmux
+- **@qa-tester** - Interactive CLI testing via VS Code terminal
 - **@scientist** - Data analysis and research
 - **@tracer** - Evidence-driven causal tracing
 - **@git-master** - Atomic commits and history management

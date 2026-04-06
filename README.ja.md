@@ -54,6 +54,13 @@ OMC が専門エージェントとワークフロー自動化によって Claude
 
 ## Quick Start
 
+### 前提条件
+
+- GitHub Copilot Chat を有効化した VS Code
+- Copilot 環境で agent mode または agent customization が利用可能であること
+- MCP サーバーをローカルでビルドするための Node.js と npm
+- MCP、prompts、カスタマイズ用ファイルを正しく読み込むため、信頼済みワークスペースとして開くこと
+
 ### 1. クローン
 
 ```bash

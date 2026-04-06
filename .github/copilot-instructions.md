@@ -31,7 +31,7 @@ Available agents (select from dropdown or reference with @):
 | @test-engineer | Test strategy, TDD workflows | Full access |
 | @designer | UI/UX design and implementation | Full access |
 | @writer | Technical documentation | Full access |
-| @qa-tester | Interactive CLI testing via tmux | Full access |
+| @qa-tester | Interactive CLI testing via VS Code terminal | Full access |
 | @scientist | Data analysis and research | Terminal only |
 | @tracer | Evidence-driven causal tracing | Full access |
 | @git-master | Atomic commits, history management | Git only |
