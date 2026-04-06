@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import * as fs from "node:fs";
 import { getStateDir, getStatePath } from "./state-tools.js";
-import { safeReadFile, safeWriteFile, errorResponse } from "./utils.js";
+import { safeReadFile, safeWriteFile, safeJsonParse, errorResponse } from "./utils.js";
 
 const AUTOPILOT_PHASES = [
   { phase: 0, name: "expansion", description: "Requirements analysis and spec generation" },
@@ -31,12 +31,11 @@ export function registerWorkflowTools(server: McpServer): void {
         return errorResponse("No autopilot state found. Start with /autopilot.");
       }
 
-      let state: Record<string, unknown>;
-      try {
-        state = JSON.parse(raw);
-      } catch {
+      const parsed = safeJsonParse(raw);
+      if (!parsed.ok) {
         return errorResponse("Autopilot state file is corrupted. Clear and restart.");
       }
+      const state: Record<string, unknown> = parsed.data;
 
       // Validate caller's phase matches persisted state
       const persistedPhase = typeof state.current_phase === "number" ? state.current_phase : 0;
@@ -122,20 +121,22 @@ export function registerWorkflowTools(server: McpServer): void {
           const statePath = getStatePath(m);
           const raw = safeReadFile(statePath);
           if (!raw) return;
-          const data = JSON.parse(raw);
+          const parsed = safeJsonParse(raw);
+          if (!parsed.ok) return;
+          const data = parsed.data;
           if (!data.active) return;
 
           if (m === "autopilot") {
-            const phase = data.current_phase ?? 0;
+            const phase = typeof data.current_phase === "number" ? data.current_phase : 0;
             if (phase < 5) {
               remaining.push(`autopilot: phase ${phase}/5 (${AUTOPILOT_PHASES[phase]?.name})`);
             }
           } else if (m === "ralph") {
             remaining.push("ralph: persistence loop active");
           } else if (m === "team") {
-            remaining.push(`team: ${data.current_phase || "active"}`);
+            remaining.push(`team: ${String(data.current_phase || "active")}`);
           } else if (m === "ultraqa") {
-            remaining.push(`ultraqa: cycle ${data.current_cycle || "?"}/5`);
+            remaining.push(`ultraqa: cycle ${String(data.current_cycle || "?")}/5`);
           } else {
             remaining.push(`${m}: active`);
           }

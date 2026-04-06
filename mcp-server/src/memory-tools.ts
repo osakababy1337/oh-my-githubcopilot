@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import * as path from "node:path";
-import { getWorkspaceRoot, ensureDir, safeReadFile, safeWriteFile, errorResponse } from "./utils.js";
+import { getWorkspaceRoot, ensureDir, safeReadFile, safeWriteFile, safeJsonParse, errorResponse } from "./utils.js";
 
 const MAX_ENTRIES = 500;
 const MAX_VALUE_LENGTH = 10_000;
@@ -26,11 +26,9 @@ function readMemory(): MemoryStore {
   const memPath = getMemoryPath();
   const data = safeReadFile(memPath);
   if (!data) return { entries: [] };
-  try {
-    return JSON.parse(data);
-  } catch {
-    return { entries: [] };
-  }
+  const result = safeJsonParse(data);
+  if (!result.ok) return { entries: [] };
+  return result.data as unknown as MemoryStore;
 }
 
 function writeMemory(store: MemoryStore): void {

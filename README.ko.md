@@ -170,10 +170,10 @@ OMG에는 워크플로 상태를 지속적으로 관리하는 TypeScript 기반 
 
 | 도구 그룹 | 도구 | 목적 |
 |-----------|-------|---------|
-| **State** | `omg_read_state`, `omg_write_state` | autopilot, ralph, ultrawork 등 모드별 상태 관리 |
-| **PRD** | `omg_read_prd`, `omg_update_story`, `omg_verify_story` | 사용자 스토리 추적이 포함된 PRD 관리 |
-| **Workflow** | `omg_check_completion`, `omg_next_phase` | 단계 전환과 완료 여부 검증 |
-| **Memory** | `omg_read_memory`, `omg_write_memory` | 프로젝트 지식 저장 |
+| **State** | `omg_read_state`, `omg_write_state`, `omg_clear_state`, `omg_list_active` | 워크플로 상태 CRUD 및 활성 모드 목록 |
+| **PRD** | `omg_create_prd`, `omg_read_prd`, `omg_update_story`, `omg_verify_story` | PRD 생성, 스토리 추적, 검증 |
+| **Workflow** | `omg_check_completion`, `omg_next_phase`, `omg_get_phase_info` | 단계 전환, 완료 검증, 단계 상태 조회 |
+| **Memory** | `omg_read_memory`, `omg_write_memory`, `omg_delete_memory` | 프로젝트 범위 지식 저장 |
 | **Model Router** | `omg_select_model` | 작업 복잡도에 따른 모델 추천 |
 
 상태 데이터는 워크스페이스 내 `.omc/` 아래에 저장됩니다.
@@ -182,7 +182,7 @@ OMG에는 워크플로 상태를 지속적으로 관리하는 TypeScript 기반 
 .omc/
 ├── state/              # 모드별 워크플로 상태 파일
 ├── plans/              # 실행 계획
-├── sessions/           # 세션 추적
+├── prd.json            # 제품 요구사항 문서
 └── project-memory.json # 프로젝트 메모리 저장소
 ```
 

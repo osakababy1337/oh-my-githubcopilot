@@ -59,11 +59,11 @@ export function registerStateTools(server: McpServer): void {
         let existing: Record<string, unknown> = {};
         const existingData = safeReadFile(statePath);
         if (existingData) {
-          try {
-            existing = JSON.parse(existingData);
-          } catch {
-            // Corrupted state — overwrite
+          const existingParsed = safeJsonParse(existingData);
+          if (existingParsed.ok) {
+            existing = existingParsed.data;
           }
+          // Corrupted or polluted state — overwrite
         }
 
         const parsed = safeJsonParse(state);
@@ -151,12 +151,14 @@ export function registerStateTools(server: McpServer): void {
         try {
           const raw = safeReadFile(path.join(stateDir, file));
           if (!raw) continue;
-          const data = JSON.parse(raw);
+          const parsed = safeJsonParse(raw);
+          if (!parsed.ok) continue;
+          const data = parsed.data;
           if (data.active) {
             activeModes.push({
               mode: file.replace("-state.json", ""),
-              phase: data.current_phase || data.phase,
-              updated_at: data.updated_at,
+              phase: String(data.current_phase || data.phase || "") || undefined,
+              updated_at: typeof data.updated_at === "string" ? data.updated_at : undefined,
             });
           }
         } catch {

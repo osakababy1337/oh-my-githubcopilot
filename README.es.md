@@ -170,10 +170,10 @@ OMG incluye un servidor MCP en TypeScript para gestionar estado persistente del 
 
 | Grupo | Herramientas | Propósito |
 |-----------|-------|---------|
-| **State** | `omg_read_state`, `omg_write_state` | Estado de autopilot, ralph, ultrawork y otros modos |
-| **PRD** | `omg_read_prd`, `omg_update_story`, `omg_verify_story` | Gestión de PRD con seguimiento de historias |
-| **Workflow** | `omg_check_completion`, `omg_next_phase` | Transiciones de fase y verificación de finalización |
-| **Memory** | `omg_read_memory`, `omg_write_memory` | Persistencia de conocimiento del proyecto |
+| **State** | `omg_read_state`, `omg_write_state`, `omg_clear_state`, `omg_list_active` | CRUD de estado de workflow y listado de modos activos |
+| **PRD** | `omg_create_prd`, `omg_read_prd`, `omg_update_story`, `omg_verify_story` | Creación de PRD, seguimiento de historias y verificación |
+| **Workflow** | `omg_check_completion`, `omg_next_phase`, `omg_get_phase_info` | Transiciones de fase, verificación de completitud, consulta de estado |
+| **Memory** | `omg_read_memory`, `omg_write_memory`, `omg_delete_memory` | Persistencia de conocimiento a nivel de proyecto |
 | **Model Router** | `omg_select_model` | Recomendación de modelo según complejidad |
 
 El estado se guarda en `.omc/` dentro del workspace.
@@ -182,7 +182,7 @@ El estado se guarda en `.omc/` dentro del workspace.
 .omc/
 ├── state/              # estado por modo
 ├── plans/              # planes de ejecución
-├── sessions/           # seguimiento de sesiones
+├── prd.json            # Documento de Requisitos del Producto
 └── project-memory.json # memoria del proyecto
 ```
 

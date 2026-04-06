@@ -170,10 +170,10 @@ OMG includes a TypeScript MCP (Model Context Protocol) server that provides pers
 
 | Tool Group | Tools | Purpose |
 |-----------|-------|---------|
-| **State** | `omg_read_state`, `omg_write_state` | Workflow state for autopilot, ralph, ultrawork, and other modes |
-| **PRD** | `omg_read_prd`, `omg_update_story`, `omg_verify_story` | Product Requirements Document with story tracking |
-| **Workflow** | `omg_check_completion`, `omg_next_phase` | Phase transitions and completion verification |
-| **Memory** | `omg_read_memory`, `omg_write_memory` | Project-scoped knowledge persistence |
+| **State** | `omg_read_state`, `omg_write_state`, `omg_clear_state`, `omg_list_active` | Workflow state CRUD and active mode listing |
+| **PRD** | `omg_create_prd`, `omg_read_prd`, `omg_update_story`, `omg_verify_story` | PRD creation, story tracking, and verification |
+| **Workflow** | `omg_check_completion`, `omg_next_phase`, `omg_get_phase_info` | Phase transitions, completion checks, phase inspection |
+| **Memory** | `omg_read_memory`, `omg_write_memory`, `omg_delete_memory` | Project-scoped knowledge persistence |
 | **Model Router** | `omg_select_model` | Model recommendation based on task complexity |
 
 State is stored under `.omc/` in the workspace:
@@ -182,7 +182,7 @@ State is stored under `.omc/` in the workspace:
 .omc/
 ├── state/              # Workflow state files per mode
 ├── plans/              # Work plans for execution
-├── sessions/           # Session tracking
+├── prd.json            # Product Requirements Document
 └── project-memory.json # Project-scoped knowledge store
 ```
 

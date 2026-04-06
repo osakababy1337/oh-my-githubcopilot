@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import * as path from "node:path";
-import { getWorkspaceRoot, ensureDir, safeReadFile, safeWriteFile, generateId, errorResponse } from "./utils.js";
+import { getWorkspaceRoot, ensureDir, safeReadFile, safeWriteFile, safeJsonParse, generateId, errorResponse } from "./utils.js";
 
 function getPrdPath(): string {
   return path.join(getWorkspaceRoot(), ".omc", "prd.json");
@@ -29,11 +29,9 @@ function readPrd(): Prd | null {
   const prdPath = getPrdPath();
   const data = safeReadFile(prdPath);
   if (!data) return null;
-  try {
-    return JSON.parse(data);
-  } catch {
-    return null;
-  }
+  const result = safeJsonParse(data);
+  if (!result.ok) return null;
+  return result.data as unknown as Prd;
 }
 
 function writePrd(prd: Prd): void {
@@ -88,12 +86,11 @@ export function registerPrdTools(server: McpServer): void {
       prd: z.string().describe("JSON string of PRD: {title, description, stories: [{id, title, description, acceptance_criteria, priority}]}"),
     },
     async ({ prd: prdJson }) => {
-      let input: Record<string, unknown>;
-      try {
-        input = JSON.parse(prdJson);
-      } catch {
-        return errorResponse("Invalid JSON in PRD parameter");
+      const parseResult = safeJsonParse(prdJson);
+      if (!parseResult.ok) {
+        return errorResponse(parseResult.error);
       }
+      const input = parseResult.data;
 
       if (!input.title || typeof input.title !== "string") {
         return errorResponse("PRD requires a 'title' string field");

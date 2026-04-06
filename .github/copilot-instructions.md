@@ -133,12 +133,12 @@ State files are stored in `.omc/` directory for OMC compatibility:
 
 ## MCP Tools
 When the OMG MCP server is available, use these tools:
-- `omg_read_state` / `omg_write_state` - Workflow state management
-- `omg_read_prd` / `omg_update_story` / `omg_verify_story` - PRD management
+- `omg_read_state` / `omg_write_state` / `omg_clear_state` / `omg_list_active` - Workflow state management
+- `omg_create_prd` / `omg_read_prd` / `omg_update_story` / `omg_verify_story` - PRD management
 - `omg_check_completion` - Verify all tasks complete before stopping
-- `omg_next_phase` - Transition autopilot phases
+- `omg_next_phase` / `omg_get_phase_info` - Transition and inspect autopilot phases
 - `omg_select_model` - Get model recommendation based on complexity
-- `omg_read_memory` / `omg_write_memory` - Project memory access
+- `omg_read_memory` / `omg_write_memory` / `omg_delete_memory` - Project memory access
 
 ## Cancellation
 `/cancel` ends active execution modes. Cancel when done+verified or blocked. Don't cancel if work is incomplete.
