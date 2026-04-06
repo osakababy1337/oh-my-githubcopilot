@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.omc/
+*.js.map
+.DS_Store
