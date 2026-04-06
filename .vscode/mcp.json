@@ -5,7 +5,7 @@
       "command": "node",
       "args": ["${workspaceFolder}/mcp-server/dist/index.js"],
       "env": {
-        "OMG_STATE_DIR": "${workspaceFolder}/.omc"
+        "WORKSPACE_ROOT": "${workspaceFolder}"
       }
     }
   }

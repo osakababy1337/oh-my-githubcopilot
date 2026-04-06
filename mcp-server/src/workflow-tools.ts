@@ -1,16 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import * as fs from "node:fs";
-import * as path from "node:path";
-
-function getStateDir(): string {
-  const workspaceRoot = process.env.WORKSPACE_ROOT || process.cwd();
-  return path.join(workspaceRoot, ".omc", "state");
-}
-
-function getStatePath(mode: string): string {
-  return path.join(getStateDir(), `${mode}-state.json`);
-}
+import { getStateDir, getStatePath } from "./state-tools.js";
+import { safeReadFile, safeWriteFile, errorResponse } from "./utils.js";
 
 const AUTOPILOT_PHASES = [
   { phase: 0, name: "expansion", description: "Requirements analysis and spec generation" },
@@ -34,26 +26,34 @@ export function registerWorkflowTools(server: McpServer): void {
     },
     async ({ current_phase, skip_reason }) => {
       const statePath = getStatePath("autopilot");
-      if (!fs.existsSync(statePath)) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify({ success: false, error: "No autopilot state found. Start with /autopilot." }),
-            },
-          ],
-        };
+      const raw = safeReadFile(statePath);
+      if (!raw) {
+        return errorResponse("No autopilot state found. Start with /autopilot.");
       }
 
-      const state = JSON.parse(fs.readFileSync(statePath, "utf-8"));
-      const nextPhase = current_phase + 1;
+      let state: Record<string, unknown>;
+      try {
+        state = JSON.parse(raw);
+      } catch {
+        return errorResponse("Autopilot state file is corrupted. Clear and restart.");
+      }
+
+      // Validate caller's phase matches persisted state
+      const persistedPhase = typeof state.current_phase === "number" ? state.current_phase : 0;
+      if (current_phase !== persistedPhase) {
+        return errorResponse(
+          `Phase mismatch: persisted state is at phase ${persistedPhase}, caller claimed ${current_phase}`
+        );
+      }
+
+      const nextPhase = persistedPhase + 1;
 
       if (nextPhase > 5) {
         state.active = false;
         state.completed = true;
         state.completed_at = new Date().toISOString();
         state.current_phase = 5;
-        fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+        safeWriteFile(statePath, JSON.stringify(state, null, 2));
 
         return {
           content: [
@@ -78,7 +78,7 @@ export function registerWorkflowTools(server: McpServer): void {
         state.skip_reason = skip_reason;
       }
 
-      fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+      safeWriteFile(statePath, JSON.stringify(state, null, 2));
 
       return {
         content: [
@@ -118,10 +118,11 @@ export function registerWorkflowTools(server: McpServer): void {
       const remaining: string[] = [];
 
       const checkMode = (m: string) => {
-        const statePath = getStatePath(m);
-        if (!fs.existsSync(statePath)) return;
         try {
-          const data = JSON.parse(fs.readFileSync(statePath, "utf-8"));
+          const statePath = getStatePath(m);
+          const raw = safeReadFile(statePath);
+          if (!raw) return;
+          const data = JSON.parse(raw);
           if (!data.active) return;
 
           if (m === "autopilot") {

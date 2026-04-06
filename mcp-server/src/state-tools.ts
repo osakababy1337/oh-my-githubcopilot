@@ -2,19 +2,14 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { getWorkspaceRoot, ensureDir, validateMode, safeReadFile, safeWriteFile, safeJsonParse, errorResponse } from "./utils.js";
 
-function getStateDir(): string {
-  const workspaceRoot = process.env.WORKSPACE_ROOT || process.cwd();
-  return path.join(workspaceRoot, ".omc", "state");
+export function getStateDir(): string {
+  return path.join(getWorkspaceRoot(), ".omc", "state");
 }
 
-function ensureDir(dir: string): void {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-}
-
-function getStatePath(mode: string): string {
+export function getStatePath(mode: string): string {
+  validateMode(mode);
   return path.join(getStateDir(), `${mode}-state.json`);
 }
 
@@ -26,21 +21,25 @@ export function registerStateTools(server: McpServer): void {
       mode: z.string().describe("The mode to read state for (e.g., autopilot, ralph, team)"),
     },
     async ({ mode }) => {
-      const statePath = getStatePath(mode);
-      if (!fs.existsSync(statePath)) {
+      try {
+        const statePath = getStatePath(mode);
+        const data = safeReadFile(statePath);
+        if (!data) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify({ active: false, mode, message: "No state found" }),
+              },
+            ],
+          };
+        }
         return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify({ active: false, mode, message: "No state found" }),
-            },
-          ],
+          content: [{ type: "text" as const, text: data }],
         };
+      } catch (err) {
+        return errorResponse((err as Error).message);
       }
-      const data = fs.readFileSync(statePath, "utf-8");
-      return {
-        content: [{ type: "text" as const, text: data }],
-      };
     }
   );
 
@@ -52,30 +51,40 @@ export function registerStateTools(server: McpServer): void {
       state: z.string().describe("JSON string of state to write/merge"),
     },
     async ({ mode, state }) => {
-      const stateDir = getStateDir();
-      ensureDir(stateDir);
-      const statePath = getStatePath(mode);
+      try {
+        const stateDir = getStateDir();
+        ensureDir(stateDir);
+        const statePath = getStatePath(mode);
 
-      let existing: Record<string, unknown> = {};
-      if (fs.existsSync(statePath)) {
-        try {
-          existing = JSON.parse(fs.readFileSync(statePath, "utf-8"));
-        } catch {
-          // Corrupted state — overwrite
+        let existing: Record<string, unknown> = {};
+        const existingData = safeReadFile(statePath);
+        if (existingData) {
+          try {
+            existing = JSON.parse(existingData);
+          } catch {
+            // Corrupted state — overwrite
+          }
         }
+
+        const parsed = safeJsonParse(state);
+        if (!parsed.ok) {
+          return errorResponse(parsed.error);
+        }
+
+        const newState = { ...existing, ...parsed.data, updated_at: new Date().toISOString() };
+        safeWriteFile(statePath, JSON.stringify(newState, null, 2));
+
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify({ success: true, mode, state: newState }),
+            },
+          ],
+        };
+      } catch (err) {
+        return errorResponse((err as Error).message);
       }
-
-      const newState = { ...existing, ...JSON.parse(state), updated_at: new Date().toISOString() };
-      fs.writeFileSync(statePath, JSON.stringify(newState, null, 2));
-
-      return {
-        content: [
-          {
-            type: "text" as const,
-            text: JSON.stringify({ success: true, mode, state: newState }),
-          },
-        ],
-      };
     }
   );
 
@@ -89,33 +98,37 @@ export function registerStateTools(server: McpServer): void {
         .describe("Mode to clear. Omit to clear all modes."),
     },
     async ({ mode }) => {
-      const stateDir = getStateDir();
-      if (!fs.existsSync(stateDir)) {
-        return {
-          content: [{ type: "text" as const, text: JSON.stringify({ success: true, message: "No state directory" }) }],
-        };
-      }
+      try {
+        const stateDir = getStateDir();
+        if (!fs.existsSync(stateDir)) {
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ success: true, message: "No state directory" }) }],
+          };
+        }
 
-      if (mode) {
-        const statePath = getStatePath(mode);
-        if (fs.existsSync(statePath)) {
-          fs.unlinkSync(statePath);
+        if (mode) {
+          const statePath = getStatePath(mode);
+          if (fs.existsSync(statePath)) {
+            fs.unlinkSync(statePath);
+          }
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ success: true, cleared: mode }) }],
+          };
+        }
+
+        // Clear all state files
+        const files = fs.readdirSync(stateDir).filter((f) => f.endsWith("-state.json"));
+        for (const file of files) {
+          fs.unlinkSync(path.join(stateDir, file));
         }
         return {
-          content: [{ type: "text" as const, text: JSON.stringify({ success: true, cleared: mode }) }],
+          content: [
+            { type: "text" as const, text: JSON.stringify({ success: true, cleared: "all", files: files.length }) },
+          ],
         };
+      } catch (err) {
+        return errorResponse((err as Error).message);
       }
-
-      // Clear all state files
-      const files = fs.readdirSync(stateDir).filter((f) => f.endsWith("-state.json"));
-      for (const file of files) {
-        fs.unlinkSync(path.join(stateDir, file));
-      }
-      return {
-        content: [
-          { type: "text" as const, text: JSON.stringify({ success: true, cleared: "all", files: files.length }) },
-        ],
-      };
     }
   );
 
@@ -136,7 +149,9 @@ export function registerStateTools(server: McpServer): void {
 
       for (const file of files) {
         try {
-          const data = JSON.parse(fs.readFileSync(path.join(stateDir, file), "utf-8"));
+          const raw = safeReadFile(path.join(stateDir, file));
+          if (!raw) continue;
+          const data = JSON.parse(raw);
           if (data.active) {
             activeModes.push({
               mode: file.replace("-state.json", ""),

@@ -1,17 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import * as fs from "node:fs";
 import * as path from "node:path";
+import { getWorkspaceRoot, ensureDir, safeReadFile, safeWriteFile, errorResponse } from "./utils.js";
+
+const MAX_ENTRIES = 500;
+const MAX_VALUE_LENGTH = 10_000;
 
 function getMemoryPath(): string {
-  const workspaceRoot = process.env.WORKSPACE_ROOT || process.cwd();
-  return path.join(workspaceRoot, ".omc", "project-memory.json");
-}
-
-function ensureDir(dir: string): void {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  return path.join(getWorkspaceRoot(), ".omc", "project-memory.json");
 }
 
 interface MemoryEntry {
@@ -28,11 +24,10 @@ interface MemoryStore {
 
 function readMemory(): MemoryStore {
   const memPath = getMemoryPath();
-  if (!fs.existsSync(memPath)) {
-    return { entries: [] };
-  }
+  const data = safeReadFile(memPath);
+  if (!data) return { entries: [] };
   try {
-    return JSON.parse(fs.readFileSync(memPath, "utf-8"));
+    return JSON.parse(data);
   } catch {
     return { entries: [] };
   }
@@ -41,7 +36,7 @@ function readMemory(): MemoryStore {
 function writeMemory(store: MemoryStore): void {
   const memPath = getMemoryPath();
   ensureDir(path.dirname(memPath));
-  fs.writeFileSync(memPath, JSON.stringify(store, null, 2));
+  safeWriteFile(memPath, JSON.stringify(store, null, 2));
 }
 
 export function registerMemoryTools(server: McpServer): void {
@@ -94,9 +89,17 @@ export function registerMemoryTools(server: McpServer): void {
         .describe("Category: project, user, feedback, reference"),
     },
     async ({ key, value, category }) => {
+      if (value.length > MAX_VALUE_LENGTH) {
+        return errorResponse(`Value exceeds maximum length of ${MAX_VALUE_LENGTH} characters`);
+      }
+
       const store = readMemory();
       const existing = store.entries.findIndex((e) => e.key === key);
       const now = new Date().toISOString();
+
+      if (existing < 0 && store.entries.length >= MAX_ENTRIES) {
+        return errorResponse(`Memory store full (max ${MAX_ENTRIES} entries)`);
+      }
 
       if (existing >= 0) {
         store.entries[existing].value = value;
@@ -139,7 +142,10 @@ export function registerMemoryTools(server: McpServer): void {
       const store = readMemory();
       const before = store.entries.length;
       store.entries = store.entries.filter((e) => e.key !== key);
-      writeMemory(store);
+      const deleted = before - store.entries.length > 0;
+      if (deleted) {
+        writeMemory(store);
+      }
 
       return {
         content: [
@@ -147,7 +153,7 @@ export function registerMemoryTools(server: McpServer): void {
             type: "text" as const,
             text: JSON.stringify({
               success: true,
-              deleted: before - store.entries.length > 0,
+              deleted,
               key,
             }),
           },

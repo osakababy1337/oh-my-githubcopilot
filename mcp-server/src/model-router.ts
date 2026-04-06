@@ -76,24 +76,24 @@ function recommend(tier: "high" | "medium" | "low"): ModelRecommendation {
   switch (tier) {
     case "high":
       return {
-        recommended_model: "claude-3.5-sonnet",
+        recommended_model: "claude-sonnet-4.6",
         tier: "HIGH",
         reason: "Complex task requiring deep reasoning and architecture decisions",
-        alternatives: ["gpt-4o"],
+        alternatives: ["gpt-4.1"],
       };
     case "medium":
       return {
-        recommended_model: "gpt-4o",
+        recommended_model: "gpt-4.1",
         tier: "MEDIUM",
         reason: "Standard implementation task with moderate complexity",
-        alternatives: ["claude-3.5-sonnet"],
+        alternatives: ["claude-sonnet-4.6"],
       };
     case "low":
       return {
-        recommended_model: "gpt-4o-mini",
+        recommended_model: "gpt-4.1-mini",
         tier: "LOW",
         reason: "Simple task suitable for fast, lightweight model",
-        alternatives: ["gpt-4o"],
+        alternatives: ["gpt-4.1"],
       };
   }
 }

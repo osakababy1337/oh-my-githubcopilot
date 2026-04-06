@@ -1,17 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import * as fs from "node:fs";
 import * as path from "node:path";
+import { getWorkspaceRoot, ensureDir, safeReadFile, safeWriteFile, generateId, errorResponse } from "./utils.js";
 
 function getPrdPath(): string {
-  const workspaceRoot = process.env.WORKSPACE_ROOT || process.cwd();
-  return path.join(workspaceRoot, ".omc", "prd.json");
-}
-
-function ensureDir(dir: string): void {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  return path.join(getWorkspaceRoot(), ".omc", "prd.json");
 }
 
 interface Story {
@@ -34,9 +27,10 @@ interface Prd {
 
 function readPrd(): Prd | null {
   const prdPath = getPrdPath();
-  if (!fs.existsSync(prdPath)) return null;
+  const data = safeReadFile(prdPath);
+  if (!data) return null;
   try {
-    return JSON.parse(fs.readFileSync(prdPath, "utf-8"));
+    return JSON.parse(data);
   } catch {
     return null;
   }
@@ -46,7 +40,7 @@ function writePrd(prd: Prd): void {
   const prdPath = getPrdPath();
   ensureDir(path.dirname(prdPath));
   prd.updated_at = new Date().toISOString();
-  fs.writeFileSync(prdPath, JSON.stringify(prd, null, 2));
+  safeWriteFile(prdPath, JSON.stringify(prd, null, 2));
 }
 
 export function registerPrdTools(server: McpServer): void {
@@ -94,12 +88,26 @@ export function registerPrdTools(server: McpServer): void {
       prd: z.string().describe("JSON string of PRD: {title, description, stories: [{id, title, description, acceptance_criteria, priority}]}"),
     },
     async ({ prd: prdJson }) => {
-      const input = JSON.parse(prdJson);
+      let input: Record<string, unknown>;
+      try {
+        input = JSON.parse(prdJson);
+      } catch {
+        return errorResponse("Invalid JSON in PRD parameter");
+      }
+
+      if (!input.title || typeof input.title !== "string") {
+        return errorResponse("PRD requires a 'title' string field");
+      }
+      if (input.stories && !Array.isArray(input.stories)) {
+        return errorResponse("PRD 'stories' must be an array");
+      }
+
+      const stories = Array.isArray(input.stories) ? input.stories : [];
       const prd: Prd = {
         title: input.title,
-        description: input.description,
-        stories: (input.stories || []).map((s: Partial<Story>) => ({
-          id: s.id || `story-${Math.random().toString(36).slice(2, 8)}`,
+        description: typeof input.description === "string" ? input.description : "",
+        stories: stories.map((s: Partial<Story>) => ({
+          id: s.id || `story-${generateId()}`,
           title: s.title || "Untitled",
           description: s.description || "",
           acceptance_criteria: s.acceptance_criteria || [],
