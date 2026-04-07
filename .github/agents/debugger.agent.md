@@ -4,7 +4,7 @@ description: >
   Root-cause analysis, regression isolation, stack trace analysis, build/compilation error resolution.
   Use when: debugging bugs, fixing build errors, tracing stack traces, resolving compilation failures,
   import errors, dependency issues, type errors, configuration errors.
-model: [claude-3.5-sonnet]
+model: [claude-sonnet-4-6]
 tools: [readFile, editFiles, search, codebase, problems, runInTerminal, usages]
 agents: [architect]
 user-invocable: true

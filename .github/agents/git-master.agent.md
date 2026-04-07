@@ -4,7 +4,7 @@ description: >
   Git expert for atomic commits, rebasing, and history management with style detection.
   Use when: creating commits, splitting commits, rebasing, branch management,
   git history cleanup, commit message formatting, git archaeology.
-model: [gpt-4o-mini]
+model: [claude-sonnet-4-6]
 tools: [readFile, search, runInTerminal]
 user-invocable: true
 ---

@@ -5,7 +5,7 @@ description: >
   Use when: finding files, searching code patterns, locating implementations,
   mapping project structure, understanding code relationships, answering
   "where is X?" questions.
-model: [gpt-4o-mini]
+model: [claude-haiku-4-5]
 tools: [readFile, search, codebase, problems, runInTerminal, usages]
 agents: [document-specialist]
 user-invocable: true

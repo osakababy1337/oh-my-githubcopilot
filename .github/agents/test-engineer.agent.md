@@ -4,7 +4,7 @@ description: >
   Test strategy, integration/e2e coverage, flaky test hardening, TDD workflows.
   Use when: writing tests, test strategy, TDD enforcement, flaky test diagnosis,
   coverage gap analysis, test suite design, red-green-refactor cycle.
-model: [gpt-4o]
+model: [claude-sonnet-4-6]
 tools: [readFile, editFiles, search, codebase, problems, runInTerminal, findTestFiles, testFailures]
 user-invocable: true
 ---

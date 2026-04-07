@@ -4,7 +4,7 @@ description: >
   Interactive CLI testing specialist using the VS Code integrated terminal.
   Use when: interactive testing, service verification, CLI testing, integration testing,
   spinning up services, end-to-end verification, runtime behavior testing.
-model: [gpt-4o]
+model: [claude-sonnet-4-6]
 tools: [readFile, search, codebase, runInTerminal]
 user-invocable: true
 ---

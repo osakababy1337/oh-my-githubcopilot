@@ -4,7 +4,7 @@ description: >
   Focused task executor for implementation work.
   Use when: implementing code changes, writing features, fixing bugs,
   executing plan steps, making code modifications, building functionality.
-model: [gpt-4o-mini, gpt-4o]
+model: [claude-sonnet-4-6]
 tools: [readFile, editFiles, search, codebase, problems, runInTerminal, findTestFiles, testFailures, usages]
 agents: [explore, architect]
 user-invocable: true

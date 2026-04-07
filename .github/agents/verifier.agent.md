@@ -4,7 +4,7 @@ description: >
   Verification strategy, evidence-based completion checks, test adequacy.
   Use when: verifying task completion, checking acceptance criteria, validating implementations,
   running verification suites, assessing regression risk, confirming work is done.
-model: [gpt-4o]
+model: [claude-sonnet-4-6]
 tools: [readFile, search, codebase, problems, runInTerminal, findTestFiles, testFailures]
 user-invocable: true
 ---

@@ -4,7 +4,7 @@ description: >
   Expert code review specialist with severity-rated feedback (READ-ONLY).
   Use when: code review, logic defect detection, SOLID principle checks,
   style review, performance review, quality strategy, spec compliance verification.
-model: [claude-3.5-sonnet]
+model: [claude-opus-4-6]
 tools: [readFile, search, codebase, problems, runInTerminal, usages]
 user-invocable: true
 ---

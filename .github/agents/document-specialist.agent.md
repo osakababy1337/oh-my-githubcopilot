@@ -5,7 +5,7 @@ description: >
   Use when: looking up external documentation, API references, framework docs,
   package evaluation, version compatibility, academic papers, standards lookup,
   external literature research.
-model: [gpt-4o]
+model: [claude-sonnet-4-6]
 tools: [readFile, search, codebase, fetch, runInTerminal]
 agents: [explore]
 user-invocable: true

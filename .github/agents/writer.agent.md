@@ -4,7 +4,7 @@ description: >
   Technical documentation writer for README, API docs, and comments.
   Use when: writing documentation, README files, API docs, architecture docs,
   user guides, code comments, technical writing.
-model: [gpt-4o-mini]
+model: [claude-haiku-4-5]
 tools: [readFile, editFiles, search, codebase, runInTerminal]
 user-invocable: true
 ---
