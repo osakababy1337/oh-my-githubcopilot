@@ -272,7 +272,7 @@ Scope-risk: narrow
 | 安装方式 | npm 包 / 插件市场 | 克隆仓库 + 构建 MCP 服务器 |
 | 代理数量 | 19+ | 20 个专业代理 |
 | 技能 | 10+ 个工作流技能 | 18 个技能与关键字触发 |
-| 状态管理 | `.omc/` 目录 | 基于 MCP 的 `.omc/` |
+| 状态管理 | `.omc/` 目录 | 基于 MCP 的 `.omc/`（与 OMC 兼容的相同路径） |
 | 多模型协作 | 通过 tmux CLI 使用 Codex/Gemini | 通过 ccg 技能提供建议式分析 |
 | 配置位置 | `~/.claude/settings.json` | `.github/` + `.vscode/mcp.json` |
 | 安全机制 | 插件级 hooks | Shell pre/post hooks |
@@ -291,6 +291,14 @@ Scope-risk: narrow
 ## License
 
 MIT
+
+---
+
+## 版权声明
+
+Copyright © 2026 jmstar85. All rights reserved.
+
+本仓库的所有内容——包括但不限于源代码、文档、代理定义、技能定义、MCP 服务器实现、提示模板和配置文件——均为 **jmstar85**（仓库所有者）的知识产权。未经 MIT 许可证条款授权，严禁擅自复制、分发或商业使用。
 
 ---
 

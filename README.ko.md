@@ -272,7 +272,7 @@ Scope-risk: narrow
 | 설치 방식 | npm 패키지 / 플러그인 마켓플레이스 | 저장소 클론 + MCP 서버 빌드 |
 | 에이전트 수 | 19개 이상 | 20개 전문 에이전트 |
 | 스킬 | 10개 이상 워크플로 스킬 | 18개 스킬과 키워드 트리거 |
-| 상태 관리 | `.omc/` 디렉터리 | MCP 서버 기반 `.omc/` |
+| 상태 관리 | `.omc/` 디렉터리 | MCP 서버 기반 `.omc/` (OMC 호환을 위해 동일 경로 사용) |
 | 멀티 모델 | Codex/Gemini via tmux CLI | ccg 스킬 기반 보조 분석 |
 | 설정 위치 | `~/.claude/settings.json` | `.github/` + `.vscode/mcp.json` |
 | 안전장치 | 플러그인 레벨 훅 | 쉘 기반 pre/post 훅 |
@@ -291,6 +291,14 @@ Scope-risk: narrow
 ## 라이선스
 
 MIT
+
+---
+
+## 저작권
+
+Copyright © 2026 jmstar85. All rights reserved.
+
+이 저장소의 모든 콘텐츠 — 소스 코드, 문서, 에이전트 정의, 스킬 정의, MCP 서버 구현, 프롬프트 템플릿, 구성 파일 등 — 에 대한 지적 재산권은 **jmstar85** (저장소 소유자)에게 있습니다. MIT 라이선스 조건 외의 무단 복제, 배포 또는 상업적 이용은 엄격히 금지됩니다.
 
 ---
 

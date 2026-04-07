@@ -272,7 +272,7 @@ Available trailers: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scope-
 | Installation | npm package / plugin marketplace | Clone + build MCP server |
 | Agent Count | 19+ (with tier variants) | 20 specialized agents |
 | Skills | 10+ workflow skills | 18 skills with keyword triggers |
-| State Management | `.omc/` directory | `.omc/` via MCP server |
+| State Management | `.omc/` directory | `.omc/` via MCP server (same path for OMC compatibility) |
 | Multi-model | Codex/Gemini via tmux CLI | ccg skill (advisory) |
 | Configuration | `~/.claude/settings.json` | `.github/` + `.vscode/mcp.json` |
 | Tool Safety | Plugin-level hooks | Pre/post shell hooks |
@@ -291,6 +291,14 @@ Available trailers: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scope-
 ## License
 
 MIT
+
+---
+
+## Copyright
+
+Copyright © 2026 jmstar85. All rights reserved.
+
+This repository and all of its contents — including but not limited to source code, documentation, agent definitions, skill definitions, MCP server implementation, prompt templates, and configuration files — are the intellectual property of **jmstar85** (the repository owner). Unauthorized reproduction, distribution, or commercial use of any part of this work outside the terms of the MIT license is strictly prohibited.
 
 ---
 
