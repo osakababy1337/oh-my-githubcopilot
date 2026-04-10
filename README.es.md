@@ -44,10 +44,10 @@ Si OMC potencia Claude Code mediante agentes especializados y automatización de
 
 - **Funciona dentro de VS Code**, sin CLIs adicionales ni procesos externos
 - **Agentes especializados**, con separación clara entre perfiles de análisis y ejecución
-- **Automatización de flujos**, desde `autopilot` hasta `ralph` y `ultrawork`
+- **Automatización de flujos**, desde `omg-autopilot` hasta `ralph` y `ultrawork`
 - **Barandillas de seguridad**, gracias a hooks pre/post tool-use
 - **Estado persistente con MCP**, incluyendo workflow state, PRD y memoria del proyecto
-- **Activación por lenguaje natural**, por ejemplo: "autopilot build me a REST API"
+- **Activación por lenguaje natural**, por ejemplo: "omg-autopilot build me a REST API"
 - **Verificación primero**, separando autoría y revisión con evidencia obligatoria
 
 ---
@@ -86,7 +86,7 @@ Abre el proyecto en VS Code con GitHub Copilot Chat habilitado. La configuració
 En Copilot Chat, dentro de agent mode, escribe:
 
 ```
-autopilot: build a REST API for managing tasks
+omg-autopilot: build a REST API for managing tasks
 ```
 
 Desde ese momento, OMG se encarga de planificar, implementar, revisar y verificar.
@@ -109,7 +109,7 @@ OMG incluye **20 agentes especializados**, cada uno con un rol concreto y un niv
 
 | Agente | Rol | Acceso |
 |-------|------|--------|
-| **@omg-coordinator** | Orquestador principal de autopilot, ralph y workflows de equipo | Full |
+| **@omg-coordinator** | Orquestador principal de omg-autopilot, ralph y workflows de equipo | Full |
 | **@executor** | Implementación de código, features y corrección de bugs | Full |
 | **@debugger** | Análisis de causa raíz, stack traces y errores de build | Full |
 | **@architect** | Análisis de arquitectura, diseño de sistema y revisión estructural | Read-only |
@@ -140,7 +140,7 @@ Las habilidades son rutinas reutilizables que se activan con slash commands o pa
 
 | Habilidad | Qué hace | Palabras clave |
 |-------|-------------|-----------------|
-| `/autopilot` | Ejecución autónoma desde la idea hasta el código funcionando | `autopilot`, `build me`, `create me` |
+| `/omg-autopilot` | Ejecución autónoma desde la idea hasta el código funcionando | `omg-autopilot`, `build me`, `create me` |
 | `/ralph` | Bucle persistente guiado por PRD hasta validación completa | `ralph`, `don't stop`, `finish this` |
 | `/ultrawork` | Motor de ejecución paralela de alto rendimiento | `ulw`, `ultrawork`, `parallel` |
 | `/team` | Coordinación por etapas de varios agentes sobre una lista compartida | `team`, `multi-agent`, `swarm` |
@@ -207,7 +207,7 @@ OMG incorpora hooks en `.github/hooks/` para actuar como red de seguridad.
 
 **Seguimiento post-tool-use:**
 - Registra uso de herramientas cuando `OMG_DEBUG=1`
-- Rastrea archivos modificados para awareness de fases en autopilot
+- Rastrea archivos modificados para awareness de fases en omg-autopilot
 - Sigue resultados de tests para detección de ultraqa
 
 ---
@@ -285,6 +285,19 @@ Trailers disponibles: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scop
 - [VS Code](https://code.visualstudio.com/) con la extensión [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
 - GitHub Copilot Chat con agent mode habilitado
 - Node.js 18+ para el servidor MCP
+
+---
+
+## What's New
+
+### v1.0.5 (2026-04-10)
+
+**Corrección de bug: Colisión de nombre de skill con Autopilot integrado de VS Code**
+
+- **Renombrado**: El skill `/autopilot` ahora es `/omg-autopilot` para evitar conflictos con el modo de permisos "Autopilot (Preview)" de VS Code
+- **Corrección de YAML frontmatter**: Se eliminó el campo no soportado `allowed-tools` y se renombró `hint` a `argument-hint` según la especificación de VS Code en todos los archivos SKILL.md
+- **Causa raíz**: El nombre del skill `autopilot` activaba el cambio de modo de permisos interno de VS Code en lugar de cargar las instrucciones del skill OMG
+- **Alcance**: Directorios de skills, código del servidor MCP, definiciones de agentes, referencias cruzadas, tests y toda la documentación
 
 ---
 

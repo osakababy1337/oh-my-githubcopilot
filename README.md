@@ -44,10 +44,10 @@ Where OMC supercharges Claude Code with specialized agents and workflow automati
 
 - **Works inside VS Code** — No extra CLI tools, no external processes. Just Copilot agent mode.
 - **Specialized agents** — 20 purpose-built agents with scoped access (read-only analysts, full-access executors)
-- **Workflow automation** — From autonomous `autopilot` to persistent `ralph` loops to parallel `ultrawork`
+- **Workflow automation** — From autonomous `omg-autopilot` to persistent `ralph` loops to parallel `ultrawork`
 - **Safety guardrails** — Pre/post tool-use hooks prevent destructive operations automatically
 - **MCP-powered state** — Persistent workflow state, PRD tracking, and project memory across sessions
-- **Natural language triggers** — Say "autopilot build me a REST API" and the system handles orchestration
+- **Natural language triggers** — Say "omg-autopilot build me a REST API" and the system handles orchestration
 - **Verification-first** — Separate authoring and review passes; claims require evidence
 
 ---
@@ -86,7 +86,7 @@ Open the project in VS Code with GitHub Copilot Chat enabled. The MCP server, ag
 In Copilot Chat (agent mode), just say:
 
 ```
-autopilot: build a REST API for managing tasks
+omg-autopilot: build a REST API for managing tasks
 ```
 
 That's it. OMG takes over — planning, implementing, reviewing, and verifying.
@@ -155,7 +155,7 @@ OMG includes **20 specialized agents**, each with defined roles and access level
 
 | Agent | Role | Access |
 |-------|------|--------|
-| **@omg-coordinator** | Main orchestrator — coordinates workflows, autopilot, ralph loops | Full |
+| **@omg-coordinator** | Main orchestrator — coordinates workflows, omg-autopilot, ralph loops | Full |
 | **@executor** | Focused task implementation — code changes, features, bug fixes | Full |
 | **@debugger** | Root-cause analysis, stack traces, build error resolution | Full |
 | **@architect** | Architecture analysis, system design, debugging guidance | Read-only |
@@ -186,7 +186,7 @@ Skills are reusable workflow routines triggered by slash commands or natural lan
 
 | Skill | What It Does | Trigger Keywords |
 |-------|-------------|-----------------|
-| `/autopilot` | Full autonomous execution from idea to working code | `autopilot`, `build me`, `create me` |
+| `/omg-autopilot` | Full autonomous execution from idea to working code | `omg-autopilot`, `build me`, `create me` |
 | `/ralph` | PRD-driven persistence loop — won't stop until verified complete | `ralph`, `don't stop`, `finish this` |
 | `/ultrawork` | Parallel execution engine for high-throughput tasks | `ulw`, `ultrawork`, `parallel` |
 | `/team` | N coordinated agents on a shared task list with staged pipeline | `team`, `multi-agent`, `swarm` |
@@ -253,7 +253,7 @@ OMG includes pre/post tool-use hooks (`.github/hooks/`) that act as safety nets:
 
 **Post-tool-use tracking:**
 - Logs tool usage for debugging (`OMG_DEBUG=1`)
-- Tracks file modifications for autopilot phase awareness
+- Tracks file modifications for omg-autopilot phase awareness
 - Monitors test results for ultraqa detection
 
 ---
@@ -331,6 +331,19 @@ Available trailers: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scope-
 - [VS Code](https://code.visualstudio.com/) with [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension
 - GitHub Copilot Chat with agent mode enabled
 - Node.js 18+ (for the MCP server)
+
+---
+
+## What's New
+
+### v1.0.5 (2026-04-10)
+
+**Bug Fix: Skill name collision with VS Code built-in Autopilot**
+
+- **Renamed** `/autopilot` skill to `/omg-autopilot` to avoid collision with VS Code's built-in "Autopilot (Preview)" permission level
+- **Fixed** invalid YAML frontmatter in all SKILL.md files: removed unsupported `allowed-tools` field, renamed `hint` to `argument-hint` per VS Code spec
+- **Root cause**: The skill name `autopilot` triggered VS Code's internal permission mode switch instead of loading the OMG skill instructions
+- **Scope**: Updated skill directories, MCP server code, agent definitions, cross-references, tests, and all documentation
 
 ---
 

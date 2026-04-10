@@ -4,8 +4,7 @@ description: >
   Show current OMG mode status, active agents, and progress.
   Activate when user says: status, what's running, show progress,
   current state, active modes, where are we.
-hint: "[--verbose]"
-allowed-tools: [readFile, search, runInTerminal]
+argument-hint: "[--verbose]"
 ---
 
 # Status
@@ -14,14 +13,14 @@ Show the current state of all OMG modes, active agents, and progress.
 
 ## When to Use
 - Check what mode is currently active
-- See progress of autopilot, ralph, or team execution
+- See progress of omg-autopilot, ralph, or team execution
 - Verify state after a cancel or resume
 
 ## Workflow
 
 ### 1. Scan State Files
 Read `.omc/state/` directory for active mode state files:
-- `autopilot-state.json`
+- `omg-autopilot-state.json`
 - `ralph-state.json`
 - `ultrawork-state.json`
 - `ultraqa-state.json`
@@ -32,7 +31,7 @@ Read `.omc/state/` directory for active mode state files:
 
 For each active mode, show:
 
-**Autopilot:**
+**OMG Autopilot:**
 - Current phase (0-5)
 - Phase name and progress
 - Files modified so far
@@ -58,14 +57,14 @@ For each active mode, show:
 - Stop condition proximity
 
 ### 3. Report No Active Modes
-If nothing is active: "No active OMG modes. Start with `/autopilot`, `/ralph`, or `/team`."
+If nothing is active: "No active OMG modes. Start with `/omg-autopilot`, `/ralph`, or `/team`."
 
 ## Output Format
 
 ```
 === OMG Status ===
 
-Mode: Autopilot
+Mode: OMG Autopilot
 Phase: 2/5 (Execution)
 Started: 2 minutes ago
 Files modified: 12

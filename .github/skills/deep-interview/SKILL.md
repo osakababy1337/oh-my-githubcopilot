@@ -5,8 +5,7 @@ description: >
   Activate when user says: deep interview, interview me, ask me everything,
   don't assume, make sure you understand, ouroboros, socratic,
   I have a vague idea, not sure exactly what I want.
-hint: "[--quick|--standard|--deep] <idea or vague description>"
-allowed-tools: [readFile, editFiles, search, codebase, problems, runInTerminal, usages, fetch]
+argument-hint: "[--quick|--standard|--deep] <idea or vague description>"
 ---
 
 # Deep Interview
@@ -14,7 +13,7 @@ allowed-tools: [readFile, editFiles, search, codebase, problems, runInTerminal, 
 Ouroboros-inspired Socratic questioning with mathematical ambiguity scoring. Replaces vague ideas with crystal-clear specifications by asking targeted questions that expose hidden assumptions.
 
 ## Pipeline
-`deep-interview` → `ralplan` (consensus refinement) → `autopilot` (execution)
+`deep-interview` → `ralplan` (consensus refinement) → `omg-autopilot` (execution)
 
 ## When to Use
 - User has a vague idea and wants thorough requirements gathering
@@ -61,8 +60,8 @@ When ambiguity <= threshold, generate spec to `.omc/specs/deep-interview-{slug}.
 
 ### Phase 5: Execution Bridge
 Present options:
-1. **Ralplan → Autopilot** (Recommended): consensus-refine then execute
-2. **Execute with autopilot** (skip ralplan)
+1. **Ralplan → OMG Autopilot** (Recommended): consensus-refine then execute
+2. **Execute with omg-autopilot** (skip ralplan)
 3. **Execute with ralph**: persistence loop
 4. **Execute with team**: parallel agents
 5. **Refine further**: continue interviewing

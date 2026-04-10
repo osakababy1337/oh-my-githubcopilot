@@ -1,17 +1,16 @@
 ---
-name: autopilot
+name: omg-autopilot
 description: >
   Full autonomous execution from idea to working code.
   Activate when user says: autopilot, auto-pilot, autonomous,
   build me, create me, make me, full auto, handle it all,
   or "I want a/an..."
-hint: "<product idea or task description>"
-allowed-tools: [readFile, editFiles, search, codebase, problems, runInTerminal, findTestFiles, testFailures, usages, fetch]
+argument-hint: "<product idea or task description>"
 ---
 
-# Autopilot
+# OMG Autopilot
 
-Autopilot takes a brief product idea and autonomously handles the full lifecycle: requirements analysis, technical design, planning, parallel implementation, QA cycling, and multi-perspective validation.
+OMG Autopilot takes a brief product idea and autonomously handles the full lifecycle: requirements analysis, technical design, planning, parallel implementation, QA cycling, and multi-perspective validation.
 
 ## When to Use
 - User wants end-to-end autonomous execution from an idea to working code
