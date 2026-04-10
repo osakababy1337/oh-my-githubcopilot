@@ -94,8 +94,13 @@ class WorkflowItem extends vscode.TreeItem {
 
 // --- Agent Tree ---
 
-class AgentTreeProvider implements vscode.TreeDataProvider<AgentItem> {
-  private _onDidChangeTreeData = new vscode.EventEmitter<AgentItem | undefined>();
+type AgentTreeNode = AgentCategoryItem | AgentLeafItem;
+
+/** Threshold above which agents are grouped into categories */
+const AGENT_CATEGORY_THRESHOLD = 20;
+
+class AgentTreeProvider implements vscode.TreeDataProvider<AgentTreeNode> {
+  private _onDidChangeTreeData = new vscode.EventEmitter<AgentTreeNode | undefined>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   constructor(private ws: vscode.WorkspaceFolder) {}
@@ -104,44 +109,83 @@ class AgentTreeProvider implements vscode.TreeDataProvider<AgentItem> {
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  getTreeItem(element: AgentItem): vscode.TreeItem {
+  getTreeItem(element: AgentTreeNode): vscode.TreeItem {
     return element;
   }
 
-  getChildren(): AgentItem[] {
+  getChildren(element?: AgentTreeNode): AgentTreeNode[] {
     const agentsDir = path.join(this.ws.uri.fsPath, '.github', 'agents');
     if (!fs.existsSync(agentsDir)) {
-      return [new AgentItem('No agents found', 'Run OMG: Initialize Workspace')];
+      return [new AgentLeafItem('No agents found', 'Run OMG: Initialize Workspace', '')];
     }
 
-    return fs.readdirSync(agentsDir)
+    const files = fs.readdirSync(agentsDir)
       .filter(f => f.endsWith('.agent.md'))
-      .sort()
-      .map(file => {
-        const name = file.replace('.agent.md', '');
-        const content = fs.readFileSync(path.join(agentsDir, file), 'utf-8');
+      .sort();
 
-        // Parse description from YAML frontmatter
-        const descMatch = content.match(/description:\s*>\s*\n\s*(.+)/);
-        const desc = descMatch ? descMatch[1].trim() : '';
+    if (!element) {
+      // Top level — flat list when at/below threshold, grouped above
+      if (files.length <= AGENT_CATEGORY_THRESHOLD) {
+        return files.map(f => this.fileToLeaf(agentsDir, f));
+      }
+      // Grouped: language reviewers (name ends with -reviewer) vs core
+      const reviewerFiles = files.filter(f => f.includes('-reviewer'));
+      const coreFiles = files.filter(f => !f.includes('-reviewer'));
+      const categories: AgentCategoryItem[] = [];
+      if (coreFiles.length > 0) {
+        categories.push(new AgentCategoryItem('Core Agents', coreFiles.map(f => this.fileToLeaf(agentsDir, f))));
+      }
+      if (reviewerFiles.length > 0) {
+        categories.push(new AgentCategoryItem('Language Reviewers', reviewerFiles.map(f => this.fileToLeaf(agentsDir, f))));
+      }
+      return categories;
+    }
 
-        const item = new AgentItem(`@${name}`, desc);
-        item.resourceUri = vscode.Uri.file(path.join(agentsDir, file));
-        item.command = {
-          command: 'vscode.open',
-          title: 'Open Agent Definition',
-          arguments: [vscode.Uri.file(path.join(agentsDir, file))],
-        };
-        return item;
-      });
+    if (element instanceof AgentCategoryItem) {
+      return element.children;
+    }
+
+    return [];
+  }
+
+  private fileToLeaf(agentsDir: string, file: string): AgentLeafItem {
+    const name = file.replace('.agent.md', '');
+    const content = fs.readFileSync(path.join(agentsDir, file), 'utf-8');
+    const descMatch = content.match(/description:\s*>\s*\n\s*(.+)/);
+    const desc = descMatch ? descMatch[1].trim() : '';
+    const item = new AgentLeafItem(`@${name}`, desc, path.join(agentsDir, file));
+    return item;
   }
 }
 
-class AgentItem extends vscode.TreeItem {
-  constructor(label: string, description: string) {
+class AgentCategoryItem extends vscode.TreeItem {
+  constructor(label: string, public readonly children: AgentLeafItem[]) {
+    super(label, vscode.TreeItemCollapsibleState.Expanded);
+    this.iconPath = new vscode.ThemeIcon('folder');
+    this.description = `${children.length}`;
+  }
+}
+
+class AgentLeafItem extends vscode.TreeItem {
+  constructor(label: string, description: string, filePath: string) {
     super(label, vscode.TreeItemCollapsibleState.None);
     this.description = description;
     this.iconPath = new vscode.ThemeIcon('person');
+    if (filePath) {
+      this.resourceUri = vscode.Uri.file(filePath);
+      this.command = {
+        command: 'vscode.open',
+        title: 'Open Agent Definition',
+        arguments: [vscode.Uri.file(filePath)],
+      };
+    }
+  }
+}
+
+/** @deprecated Use AgentLeafItem instead */
+class AgentItem extends AgentLeafItem {
+  constructor(label: string, description: string) {
+    super(label, description, '');
   }
 }
 

@@ -34,7 +34,7 @@
 
 **oh-my-githubcopilot (OMG)** brings the multi-agent orchestration paradigm — pioneered by [oh-my-claudecode (OMC)](https://github.com/yeachan-heo/oh-my-claudecode) for Claude Code — to **GitHub Copilot**.
 
-Where OMC supercharges Claude Code with specialized agents and workflow automation, OMG does the same for Copilot's agent mode in VS Code. Instead of a single assistant doing everything, OMG coordinates **20 specialized agents** and **18 reusable skills** through an MCP server, giving you structured workflows for planning, execution, review, and verification — all within your existing Copilot setup.
+Where OMC supercharges Claude Code with specialized agents and workflow automation, OMG does the same for Copilot's agent mode in VS Code. Instead of a single assistant doing everything, OMG coordinates **28 specialized agents** and **22 reusable skills** through an MCP server, giving you structured workflows for planning, execution, review, and verification — all within your existing Copilot setup.
 
 > **This is not a fork or copy of OMC.** It is an independent implementation built from scratch to leverage GitHub Copilot's agent customization features (`.agent.md`, `.prompt.md`, `SKILL.md`, MCP tools) while drawing architectural inspiration from OMC's multi-agent approach.
 
@@ -43,7 +43,7 @@ Where OMC supercharges Claude Code with specialized agents and workflow automati
 ## Why OMG?
 
 - **Works inside VS Code** — No extra CLI tools, no external processes. Just Copilot agent mode.
-- **Specialized agents** — 20 purpose-built agents with scoped access (read-only analysts, full-access executors)
+- **Specialized agents** — 28 purpose-built agents with scoped access (read-only analysts, full-access executors, 8 language reviewers)
 - **Workflow automation** — From autonomous `omg-autopilot` to persistent `ralph` loops to parallel `ultrawork`
 - **Safety guardrails** — Pre/post tool-use hooks prevent destructive operations automatically
 - **MCP-powered state** — Persistent workflow state, PRD tracking, and project memory across sessions
@@ -151,30 +151,47 @@ After applying, open the target project as a trusted workspace and validate in C
 
 ## Agents
 
-OMG includes **20 specialized agents**, each with defined roles and access levels. Agents are declared as `.agent.md` files under `.github/agents/`.
+OMG includes **28 specialized agents**, each with defined roles and access levels. Agents are declared as `.agent.md` files under `.github/agents/`.
+
+### Core Agents (20)
 
 | Agent | Role | Access |
 |-------|------|--------|
 | **@omg-coordinator** | Main orchestrator — coordinates workflows, omg-autopilot, ralph loops | Full |
 | **@executor** | Focused task implementation — code changes, features, bug fixes | Full |
-| **@debugger** | Root-cause analysis, stack traces, build error resolution | Full |
+| **@debugger** | Root-cause analysis, stack traces, build error resolution (7-language guide) | Full |
 | **@architect** | Architecture analysis, system design, debugging guidance | Read-only |
 | **@planner** | Strategic planning with interview workflow | Plans only |
 | **@analyst** | Requirements analysis, gap detection, scope risk | Read-only |
 | **@verifier** | Evidence-based completion checks, test adequacy | Test runner |
-| **@code-reviewer** | Severity-rated code review, SOLID checks, logic defects | Read-only |
-| **@security-reviewer** | OWASP Top 10, secrets detection, auth/authz audit | Read-only |
+| **@code-reviewer** | Severity-rated code review, SOLID checks, canonical coding standards | Read-only |
+| **@security-reviewer** | OWASP Top 10, secrets detection (sk-/ghp_/AKIA), auth/authz audit | Read-only |
 | **@critic** | Thorough plan/code review gate, pre-mortem analysis | Read-only |
-| **@test-engineer** | Test strategy, TDD workflows, flaky test hardening | Full |
+| **@test-engineer** | Test strategy, TDD workflows, framework detection, flaky test hardening | Full |
 | **@designer** | UI/UX design and frontend implementation | Full |
-| **@writer** | Technical documentation — README, API docs, architecture docs | Full |
+| **@writer** | Technical documentation — README, API docs, CODEMAP generation | Full |
 | **@tracer** | Evidence-driven causal tracing with competing hypotheses | Full |
 | **@scientist** | Data analysis, statistical analysis, visualization | Read-only |
-| **@qa-tester** | Interactive CLI testing via VS Code terminal, E2E verification | Full |
+| **@qa-tester** | Interactive CLI testing via VS Code terminal, Playwright POM, E2E | Full |
 | **@git-master** | Atomic commits, rebasing, history management | Git only |
-| **@code-simplifier** | Code clarity, reducing complexity, removing redundancy | Full |
+| **@code-simplifier** | Code clarity, complexity metrics, simplification patterns | Full |
 | **@explore** | Codebase search, file finding, structure mapping | Read-only |
 | **@document-specialist** | External documentation research, API reference lookup | Read-only |
+
+### Language Reviewer Agents — Tier 2 (8)
+
+Invoke with `@mention` for language-specific code review:
+
+| Agent | Language | Key Rules |
+|-------|----------|----------|
+| **@typescript-reviewer** | TypeScript | Strict mode, type safety, no-any, exhaustive checks |
+| **@python-reviewer** | Python | PEP 8, type hints, idiomatic patterns |
+| **@rust-reviewer** | Rust | Ownership, borrow checker, unsafe blocks, clippy |
+| **@go-reviewer** | Go | Idiomatic Go, goroutine safety, error handling |
+| **@java-reviewer** | Java | SOLID, Spring patterns, null safety |
+| **@csharp-reviewer** | C# | Nullable analysis, async/await, C# idioms |
+| **@swift-reviewer** | Swift | Memory safety, Swift concurrency, SwiftUI patterns |
+| **@database-reviewer** | SQL/ORM | Query performance, parameterization, schema design |
 
 ---
 
@@ -264,8 +281,8 @@ OMG includes pre/post tool-use hooks (`.github/hooks/`) that act as safety nets:
 oh-my-githubcopilot/
 ├── .github/
 │   ├── copilot-instructions.md    # Root orchestration instructions
-│   ├── agents/                    # 20 specialized agent definitions
-│   ├── skills/                    # 18 workflow skill routines
+│   ├── agents/                    # 28 specialized agent definitions (20 core + 8 language reviewers)
+│   ├── skills/                    # 22 workflow skill routines
 │   ├── hooks/                     # Pre/post tool-use safety guards
 │   └── prompts/                   # Quick-fix, quick-plan, quick-review templates
 ├── mcp-server/                    # TypeScript MCP server
@@ -316,8 +333,8 @@ Available trailers: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scope-
 |---------|----------------------|--------------------------|
 | Target Platform | Claude Code CLI | GitHub Copilot (VS Code) |
 | Installation | npm package / plugin marketplace | Clone + build MCP server |
-| Agent Count | 19+ (with tier variants) | 20 specialized agents |
-| Skills | 10+ workflow skills | 18 skills with keyword triggers |
+| Agent Count | 19+ (with tier variants) | 28 agents (20 core + 8 language reviewers) |
+| Skills | 10+ workflow skills | 22 skills with keyword triggers |
 | State Management | `.omc/` directory | `.omc/` via MCP server (same path for OMC compatibility) |
 | Multi-model | Codex/Gemini via tmux CLI | ccg skill (advisory) |
 | Configuration | `~/.claude/settings.json` | `.github/` + `.vscode/mcp.json` |
@@ -335,6 +352,55 @@ Available trailers: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scope-
 ---
 
 ## What's New
+
+### v1.1.0 (2026-04-10) — ECC Integration
+
+**Major upgrade: best-of-ECC (Everything Claude Code) features merged into OMG**
+
+#### New Agents — Language Reviewer Tier (8)
+
+Eight new language-specialist review agents, each with 13–21 embedded style rules and a canonical coding standards reference:
+
+- **@typescript-reviewer** — strict mode, no-any, exhaustive discriminated unions
+- **@python-reviewer** — PEP 8, type hints, idiomatic patterns
+- **@rust-reviewer** — ownership, borrow checker, unsafe justification
+- **@go-reviewer** — idiomatic Go, goroutine safety, explicit error handling
+- **@java-reviewer** — SOLID, Spring patterns, null safety
+- **@csharp-reviewer** — nullable analysis, async/await, C# idioms
+- **@swift-reviewer** — Swift concurrency, memory safety, SwiftUI patterns
+- **@database-reviewer** — query performance, parameterization, schema design
+
+#### New Skills (4)
+
+- **`/tdd`** — Full TDD enforcement: Red-Green-Refactor cycle, framework quick-ref (Jest/pytest/Cargo/Go test), gate table with fail conditions
+- **`/security-scan`** — Rapid pre-commit security sweep: secrets patterns (sk-/ghp_/AKIA), CVE audit, input validation, auth checks
+- **`/coding-standards`** — Canonical cross-language coding standards (naming, functions, errors, anti-patterns, SOLID). Cited by all reviewer agents.
+- **`/skill-stocktake`** — Audit skill inventory for frontmatter validity, template sync, stubs, and coverage gaps
+
+#### Enhanced Core Agents (7)
+
+| Agent | What Was Added |
+|-------|----------------|
+| **@debugger** | 7-language build resolution guide (Node/TS, Python, Rust, Go, Java, C#, Swift) |
+| **@security-reviewer** | Secrets detection regex patterns, JWT/session/crypto rules, OWASP annotations |
+| **@qa-tester** | Playwright Page Object Model pattern, E2E classification table |
+| **@writer** | CODEMAP generation template + auto-update workflow |
+| **@code-reviewer** | Canonical D9 coding standards table embedded |
+| **@test-engineer** | Framework detection table, coverage gap protocol, flaky test root causes |
+| **@code-simplifier** | Complexity metrics table, simplification patterns, stability exceptions |
+
+#### Enhanced Skill (1)
+
+- **`/remember`** — Quality gate added: 3-question filter (actionable? durable? unique?) before storing to project memory
+
+#### Infrastructure
+
+- **Tiered agent/skill thresholds** in `convention.ts`: warn <20/18, info <28/22, silent ≥28/22 (backward compatible)
+- **Tree-view category grouping**: agents auto-split into "Core Agents" + "Language Reviewers" when count >20
+- **Post-tool-use hook** (`OMG_LINT_ON_EDIT=1`): opt-in TypeScript typecheck + ESLint on every file edit with `FILE_PATH` sanitization guard
+- **Security patches**: hono/node-server CVEs fixed, vitest upgraded to 4.1.4, `.env*` added to `.gitignore`
+
+---
 
 ### v1.0.5 (2026-04-10)
 

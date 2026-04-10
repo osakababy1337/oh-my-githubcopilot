@@ -4,3 +4,7 @@ dist/
 *.js.map
 .DS_Store
 .claude/
+.env
+.env.*
+.env.local
+.env.*.local

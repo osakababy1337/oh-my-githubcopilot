@@ -42,11 +42,41 @@ describe('convention', () => {
       expect(warnings.some(w => w.message.includes('5/20'))).toBe(true);
     });
 
+    it('emits info when agent count is between 20 and 27 (extended tier)', () => {
+      setupFullWorkspace(tmpDir, { agentCount: 22 });
+      const issues = checkConventionFiles(tmpDir);
+      const warnings = issues.filter(i => i.severity === 'warning');
+      const infos = issues.filter(i => i.severity === 'info');
+      expect(warnings.some(w => w.message.includes('agent'))).toBe(false);
+      expect(infos.some(i => i.message.includes('22/28'))).toBe(true);
+    });
+
+    it('emits no agent issues when count is 28 or more', () => {
+      setupFullWorkspace(tmpDir, { agentCount: 28 });
+      const issues = checkConventionFiles(tmpDir);
+      expect(issues.filter(i => i.message.includes('agent'))).toHaveLength(0);
+    });
+
     it('warns when skill count is less than 18', () => {
       setupFullWorkspace(tmpDir, { skillCount: 3 });
       const issues = checkConventionFiles(tmpDir);
       const warnings = issues.filter(i => i.severity === 'warning');
       expect(warnings.some(w => w.message.includes('3/18'))).toBe(true);
+    });
+
+    it('emits info when skill count is between 18 and 21 (extended tier)', () => {
+      setupFullWorkspace(tmpDir, { skillCount: 20 });
+      const issues = checkConventionFiles(tmpDir);
+      const warnings = issues.filter(i => i.severity === 'warning');
+      const infos = issues.filter(i => i.severity === 'info');
+      expect(warnings.some(w => w.message.includes('skill'))).toBe(false);
+      expect(infos.some(i => i.message.includes('20/22'))).toBe(true);
+    });
+
+    it('emits no skill issues when count is 22 or more', () => {
+      setupFullWorkspace(tmpDir, { skillCount: 22 });
+      const issues = checkConventionFiles(tmpDir);
+      expect(issues.filter(i => i.message.includes('skill'))).toHaveLength(0);
     });
 
     it('warns when MCP server not built', () => {
@@ -56,10 +86,12 @@ describe('convention', () => {
       expect(warnings.some(w => w.message.includes('not built'))).toBe(true);
     });
 
-    it('reports no warnings when fully configured with correct counts', () => {
+    it('reports no errors or warnings when fully configured at core counts', () => {
       setupFullWorkspace(tmpDir);
       const issues = checkConventionFiles(tmpDir);
-      expect(issues).toHaveLength(0);
+      const blocking = issues.filter(i => i.severity === 'error' || i.severity === 'warning');
+      // Info-level messages (optional upgrade nudges) are acceptable
+      expect(blocking).toHaveLength(0);
     });
   });
 
@@ -207,6 +239,9 @@ function setupFullWorkspace(
     'verifier', 'code-reviewer', 'security-reviewer', 'test-engineer', 'designer',
     'writer', 'qa-tester', 'scientist', 'tracer', 'git-master',
     'code-simplifier', 'critic', 'document-specialist', 'explore', 'omg-coordinator',
+    // Extended (Phase 2 language reviewers)
+    'typescript-reviewer', 'python-reviewer', 'rust-reviewer', 'go-reviewer',
+    'java-reviewer', 'csharp-reviewer', 'swift-reviewer', 'database-reviewer',
   ];
   for (let i = 0; i < agentCount; i++) {
     const name = agentNames[i] || `agent-${i}`;
@@ -224,6 +259,8 @@ function setupFullWorkspace(
     'team', 'ccg', 'deep-interview', 'deep-dive', 'trace',
     'verify', 'review', 'ultraqa', 'ai-slop-cleaner', 'self-improve',
     'remember', 'cancel', 'status',
+    // Extended (Phase 3 new skills)
+    'tdd', 'search-first', 'coding-standards', 'security-scan',
   ];
   for (let i = 0; i < skillCount; i++) {
     const name = skillNames[i] || `skill-${i}`;

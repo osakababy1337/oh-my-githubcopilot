@@ -31,7 +31,7 @@ Read `.omc/state/` directory for active mode state files:
 
 For each active mode, show:
 
-**Autopilot:**
+**OMG Autopilot:**
 - Current phase (0-5)
 - Phase name and progress
 - Files modified so far
@@ -64,7 +64,7 @@ If nothing is active: "No active OMG modes. Start with `/omg-autopilot`, `/ralph
 ```
 === OMG Status ===
 
-Mode: Autopilot
+Mode: OMG Autopilot
 Phase: 2/5 (Execution)
 Started: 2 minutes ago
 Files modified: 12

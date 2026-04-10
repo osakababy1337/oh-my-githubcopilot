@@ -67,3 +67,63 @@ VERIFICATION:
 - Are all commands verified?
 - Does the documentation match existing style?
 - Is the content scannable?
+
+---
+
+## Codemap Generation
+
+When asked to generate or update a `CODEMAP.md`, produce a structured map of the project:
+
+```markdown
+# CODEMAP — [Project Name]
+
+> Last updated: [date]
+
+## Structure
+[Brief description of architecture: what the project does, main entry points]
+
+## Directory Map
+\`\`\`
+src/
+├── index.ts          # Entry point and server bootstrap
+├── routes/           # Express route handlers
+│   ├── users.ts      # /users CRUD operations
+│   └── auth.ts       # JWT auth endpoints
+├── models/           # Database models (Prisma schema)
+├── services/         # Business logic layer
+│   ├── UserService.ts
+│   └── EmailService.ts
+└── utils/            # Shared utilities
+\`\`\`
+
+## Key Files
+| File | Purpose |
+|------|---------|
+| `src/index.ts` | Server entry, middleware setup |
+| `src/config.ts` | Environment variable loading |
+| `prisma/schema.prisma` | Database schema |
+
+## Data Flow
+[Brief description: Request → Route → Service → Model → Database]
+
+## Extension Points
+[Where to add new features, what patterns to follow]
+```
+
+### When to Update CODEMAP
+- New directory or module added
+- Major refactor of existing structure
+- New key file added (config, entry point, schema)
+- When asked by `@omg-coordinator` after large changes
+
+## Auto-Update Workflow
+
+When code changes, automatically detect and update stale documentation:
+
+1. **Detect scope**: Check `git diff --name-only` for changed files
+2. **Find related docs**: Search for references to changed files/functions in `*.md` files
+3. **Update code examples**: Re-run and re-verify any code blocks mentioning changed structures
+4. **Update CODEMAP**: If new files/directories added, update `CODEMAP.md`
+5. **Update README**: If public API changed (routes, exports, CLI commands), update README examples
+
+> See also: `/update-docs` skill for automated doc update workflows.

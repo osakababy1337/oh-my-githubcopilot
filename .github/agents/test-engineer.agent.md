@@ -94,3 +94,64 @@ Red-Green-Refactor Cycle:
 - Does each test verify one behavior?
 - Did I run all tests and show fresh output?
 - For TDD: did I write the failing test first?
+
+---
+
+## Framework Detection & Commands
+
+| Manifest | Framework | Run Command | Coverage |
+|----------|-----------|-------------|----------|
+| `vitest.config.*` | Vitest | `npx vitest run` | `npx vitest run --coverage` |
+| `jest.config.*` | Jest | `npx jest` | `npx jest --coverage` |
+| `pytest.ini` / `pyproject.toml` | pytest | `python -m pytest` | `python -m pytest --cov` |
+| `Cargo.toml` | cargo test | `cargo test` | `cargo tarpaulin` |
+| `go.mod` | go test | `go test ./...` | `go test -cover ./...` |
+| `build.gradle` | JUnit | `./gradlew test` | `./gradlew jacocoTestReport` |
+
+## Coverage Gap Analysis Protocol
+
+1. Run coverage: `{framework coverage command}`
+2. Identify uncovered lines: focus on branches, not just lines
+3. Classify gaps by risk:
+   - **HIGH:** Error paths, security checks, data validation, auth flows
+   - **MEDIUM:** Business logic branches, edge cases
+   - **LOW:** Trivial getters, config loading, logging
+4. Prioritize HIGH-risk gaps; write tests for those first
+
+## Test Structure Template (Arrange-Act-Assert)
+
+```typescript
+// Vitest / Jest
+describe('UserService.getById', () => {
+  it('returns the user when found', async () => {
+    // Arrange
+    const mockRepo = { findById: vi.fn().mockResolvedValue({ id: 1, name: 'Alice' }) };
+    const service = new UserService(mockRepo);
+
+    // Act
+    const user = await service.getById(1);
+
+    // Assert
+    expect(user).toEqual({ id: 1, name: 'Alice' });
+  });
+
+  it('throws NotFoundError when user does not exist', async () => {
+    // Arrange
+    const mockRepo = { findById: vi.fn().mockResolvedValue(null) };
+    const service = new UserService(mockRepo);
+
+    // Act + Assert
+    await expect(service.getById(99)).rejects.toThrow(NotFoundError);
+  });
+});
+```
+
+## Flaky Test Root Causes & Fixes
+
+| Root Cause | Symptom | Fix |
+|------------|---------|-----|
+| Shared state | Passes alone, fails in suite | `beforeEach` / `afterEach` cleanup |
+| Timing dependency | Intermittent failure | Replace `sleep` with explicit wait/poll |
+| Test order dependency | Passes in one order only | Randomize test order; isolate setup |
+| External service | Fails in CI | Mock the service at boundary |
+| Race condition | Flips between pass/fail | Add `await` to all async operations |

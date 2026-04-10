@@ -60,7 +60,7 @@ When ambiguity <= threshold, generate spec to `.omc/specs/deep-interview-{slug}.
 
 ### Phase 5: Execution Bridge
 Present options:
-1. **Ralplan → Autopilot** (Recommended): consensus-refine then execute
+1. **Ralplan → OMG Autopilot** (Recommended): consensus-refine then execute
 2. **Execute with omg-autopilot** (skip ralplan)
 3. **Execute with ralph**: persistence loop
 4. **Execute with team**: parallel agents

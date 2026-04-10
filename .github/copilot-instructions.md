@@ -41,6 +41,8 @@ Available agents (select from dropdown or reference with @):
 | @explore | Codebase search, file finding | READ-ONLY |
 | @omg-coordinator | Workflow orchestration (internal) | Full access |
 
+> **Tier 2 — Language Reviewers** (invoke with @mention, not in main routing): @typescript-reviewer, @python-reviewer, @rust-reviewer, @go-reviewer, @java-reviewer, @csharp-reviewer, @swift-reviewer, @database-reviewer. Route language-specific code review to these specialists.
+
 ## Skills (Slash Commands)
 Invoke via `/skill-name`. These are available as slash commands:
 
@@ -64,6 +66,10 @@ Invoke via `/skill-name`. These are available as slash commands:
 - `/ultraqa` - Comprehensive QA testing
 - `/ai-slop-cleaner` - Detect and fix AI-generated code smells
 - `/self-improve` - Self-improvement analysis
+- `/security-scan` - Rapid security sweep for secrets, CVEs, and auth issues
+- `/tdd` - Test-Driven Development enforcement (red-green-refactor)
+- `/coding-standards` - Canonical cross-language coding standards reference
+- `/skill-stocktake` - Audit skill inventory for quality and coverage
 
 ### Utility Skills
 - `/remember` - Save information to project memory
@@ -78,7 +84,10 @@ These keywords automatically activate the corresponding skill:
 - "ralplan", "consensus plan" → `/ralplan`
 - "deep interview", "stakeholder interview" → `/deep-interview`
 - "deslop", "anti-slop", "cleanup slop" → `/ai-slop-cleaner`
-- "tdd", "test driven" → TDD mode via @test-engineer
+- "tdd", "test driven" → TDD mode via @test-engineer + `/tdd`
+- "security scan", "check secrets", "audit deps" → `/security-scan`
+- "stocktake", "skill audit" → `/skill-stocktake`
+- "coding standards", "style guide", "naming rules" → `/coding-standards`
 - "cancelomc", "cancel omg" → `/cancel`
 
 ## Completion Rules

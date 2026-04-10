@@ -34,7 +34,7 @@
 
 **oh-my-githubcopilot (OMG)** 는 [oh-my-claudecode (OMC)](https://github.com/yeachan-heo/oh-my-claudecode)가 Claude Code에서 보여준 멀티 에이전트 오케스트레이션 패턴을 **GitHub Copilot** 환경으로 옮겨온 프로젝트입니다.
 
-OMC가 Claude Code를 특화된 에이전트와 워크플로 자동화로 확장했다면, OMG는 VS Code의 Copilot agent mode에서 같은 철학을 구현합니다. 하나의 도우미가 모든 일을 처리하는 대신, OMG는 **20개의 전문 에이전트**와 **18개의 재사용 가능한 스킬**을 MCP 서버를 통해 조율하여 계획, 구현, 리뷰, 검증을 구조적으로 수행합니다.
+OMC가 Claude Code를 특화된 에이전트와 워크플로 자동화로 확장했다면, OMG는 VS Code의 Copilot agent mode에서 같은 철학을 구현합니다. 하나의 도우미가 모든 일을 처리하는 대신, OMG는 **28개의 전문 에이전트**와 **22개의 재사용 가능한 스킬**을 MCP 서버를 통해 조율하여 계획, 구현, 리뷰, 검증을 구조적으로 수행합니다.
 
 > **이 프로젝트는 OMC의 포크나 복제가 아닙니다.** GitHub Copilot의 에이전트 커스터마이징 기능(`.agent.md`, `.prompt.md`, `SKILL.md`, MCP 도구)에 맞춰 처음부터 독립적으로 구현되었으며, OMC의 멀티 에이전트 설계 방식에서 영감을 받았습니다.
 
@@ -43,7 +43,7 @@ OMC가 Claude Code를 특화된 에이전트와 워크플로 자동화로 확장
 ## 왜 OMG인가?
 
 - **VS Code 안에서 바로 동작** — 별도 CLI나 외부 런타임 없이 Copilot agent mode 위에서 작동합니다.
-- **전문화된 에이전트** — 읽기 전용 분석가부터 전체 권한 실행가까지, 역할이 분리된 20개 에이전트
+- **전문화된 에이전트** — 읽기 전용 분석가부터 전체 권한 실행가까지, 역할이 분리된 28개 에이전트 (20개 코어 + 8개 언어 리뷰어)
 - **워크플로 자동화** — 자율 실행 `omg-autopilot`, 끝까지 밀어붙이는 `ralph`, 병렬 실행 `ultrawork`
 - **안전 가드레일** — pre/post tool-use 훅으로 파괴적인 작업을 기본 차단
 - **MCP 기반 상태 관리** — 워크플로 상태, PRD, 프로젝트 메모리를 세션 간 유지
@@ -157,24 +157,40 @@ OMG는 **20개의 전문 에이전트**를 포함하며, 각 에이전트는 역
 |-------|------|--------|
 | **@omg-coordinator** | 메인 오케스트레이터, omg-autopilot/ralph/팀 워크플로 조율 | Full |
 | **@executor** | 구현 담당, 기능 개발과 버그 수정 | Full |
-| **@debugger** | 원인 분석, 스택 트레이스, 빌드 오류 해결 | Full |
+| **@debugger** | 원인 분석, 스택 트레이스, 빌드 오류 해결 (7개 언어 가이드) | Full |
 | **@architect** | 아키텍처 분석, 시스템 설계, 구조 검토 | Read-only |
 | **@planner** | 전략적 계획 수립과 인터뷰 기반 플래닝 | Plans only |
 | **@analyst** | 요구사항 분석, 누락 탐지, 범위 리스크 점검 | Read-only |
 | **@verifier** | 증거 기반 완료 검증, 테스트 적절성 확인 | Test runner |
-| **@code-reviewer** | 심각도 기반 코드 리뷰, 논리 결함 점검 | Read-only |
-| **@security-reviewer** | OWASP, 시크릿, 인증/인가, 의존성 보안 점검 | Read-only |
+| **@code-reviewer** | 심각도 기반 코드 리뷰, 표준 코딩 가이드 적용 | Read-only |
+| **@security-reviewer** | OWASP, 시크릿 탐지 (sk-/ghp_/AKIA), 인증/인가 점검 | Read-only |
 | **@critic** | 계획/코드에 대한 엄격한 게이트 리뷰 | Read-only |
-| **@test-engineer** | 테스트 전략, TDD, flaky test 강화 | Full |
+| **@test-engineer** | 테스트 전략, TDD, 프레임워크 감지, flaky test 강화 | Full |
 | **@designer** | UI/UX 설계와 프론트엔드 구현 | Full |
-| **@writer** | README, API 문서, 아키텍처 문서 작성 | Full |
+| **@writer** | README, API 문서, CODEMAP 생성 | Full |
 | **@tracer** | 증거 기반 인과 추적과 가설 검증 | Full |
 | **@scientist** | 데이터 분석, 통계, 시각화 | Read-only |
-| **@qa-tester** | VS Code 터미널 기반 CLI 테스트, 통합/E2E 검증 | Full |
+| **@qa-tester** | VS Code 터미널 기반 CLI 테스트, Playwright POM, E2E | Full |
 | **@git-master** | 커밋 분리, 리베이스, 히스토리 관리 | Git only |
-| **@code-simplifier** | 코드 단순화, 복잡도 축소, 중복 제거 | Full |
+| **@code-simplifier** | 코드 단순화, 복잡도 지표 분석, 중복 제거 | Full |
 | **@explore** | 코드베이스 탐색, 파일 검색, 구조 파악 | Read-only |
 | **@document-specialist** | 외부 문서 조사, API 레퍼런스 조회 | Read-only |
+
+
+### 언어 리뷰어 에이전트 — Tier 2 (8)
+
+`@mention`으로 언어별 코드 리뷰를 요청합니다.
+
+| 에이전트 | 언어 | 핵심 규칙 |
+|-------|----------|----------|
+| **@typescript-reviewer** | TypeScript | strict 모드, no-any, 타입 안전성 |
+| **@python-reviewer** | Python | PEP 8, 타입 힌트, 관용적 패턴 |
+| **@rust-reviewer** | Rust | 소유권, 빌림 검사기, unsafe 정당화 |
+| **@go-reviewer** | Go | 관용적 Go, 고루틴 안전성, 오류 처리 |
+| **@java-reviewer** | Java | SOLID, Spring 패턴, null 안전성 |
+| **@csharp-reviewer** | C# | nullable 분석, async/await, C# 관용구 |
+| **@swift-reviewer** | Swift | Swift 동시성, 메모리 안전성, SwiftUI |
+| **@database-reviewer** | SQL/ORM | 쿼리 성능, 파라미터화, 스키마 설계 |
 
 ---
 
@@ -206,12 +222,16 @@ OMG는 **20개의 전문 에이전트**를 포함하며, 각 에이전트는 역
 | `/ultraqa` | 테스트-검증-수정 반복 루프 | `ultraqa`, `fix all tests` |
 | `/ai-slop-cleaner` | AI가 만든 불필요한 코드 냄새 정리 | `deslop`, `anti-slop`, `cleanup slop` |
 | `/self-improve` | 토너먼트 선택 기반 자율 개선 루프 | `self-improve`, `evolve code` |
+| `/tdd` | TDD 강제 — 레드-그린-리팩터 사이클 | `tdd`, `test driven`, `test first` |
+| `/security-scan` | 시크릿, CVE, 입력 검증, 인증 빠른 점검 | `security scan`, `check secrets`, `audit deps` |
+| `/coding-standards` | 언어 공통 코딩 표준 참조 | `coding standards`, `style guide`, `naming rules` |
+| `/skill-stocktake` | 스킬 인벤토리 품질·커버리지 감사 | `skill audit`, `stocktake`, `skill inventory` |
 
 ### 유틸리티 스킬
 
 | 스킬 | 설명 | 트리거 키워드 |
 |-------|-------------|-----------------|
-| `/remember` | 정보를 프로젝트 메모리에 저장 | `remember this`, `store this` |
+| `/remember` | 정보를 프로젝트 메모리에 저장 (품질 게이트: 실행 가능·지속성·고유성 필터) | `remember this`, `store this` |
 | `/cancel` | 활성 워크플로 모드 중단 | `cancel`, `stop`, `abort` |
 | `/status` | 현재 상태와 활성 에이전트 표시 | `status`, `what's running` |
 
@@ -264,8 +284,8 @@ OMG는 `.github/hooks/`에 pre/post tool-use 훅을 포함하여 안전장치를
 oh-my-githubcopilot/
 ├── .github/
 │   ├── copilot-instructions.md    # 루트 오케스트레이션 지침
-│   ├── agents/                    # 20개 전문 에이전트 정의
-│   ├── skills/                    # 18개 스킬 루틴
+│   ├── agents/                    # 28개 전문 에이전트 정의 (20개 코어 + 8개 언어 리뷰어)
+│   ├── skills/                    # 22개 스킬 루틴
 │   ├── hooks/                     # pre/post tool-use 가드
 │   └── prompts/                   # quick-fix, quick-plan, quick-review 템플릿
 ├── mcp-server/                    # TypeScript MCP 서버
@@ -335,6 +355,55 @@ Scope-risk: narrow
 ---
 
 ## What's New
+
+### v1.1.0 (2026-04-10) — ECC 통합
+
+**대규모 업그레이드: ECC(Everything Claude Code)의 핵심 기능을 OMG에 통합**
+
+#### 신규 에이전트 — 언어 리뷰어 Tier (8개)
+
+각 에이전트에 13~21개의 언어별 스타일 규칙이 내장되어 있습니다.
+
+- **@typescript-reviewer** — strict 모드, no-any, 완전한 판별 유니온
+- **@python-reviewer** — PEP 8, 타입 힌트, 관용적 패턴
+- **@rust-reviewer** — 소유권, 빌림 검사기, unsafe 정당화
+- **@go-reviewer** — 관용적 Go, 고루틴 안전성, 명시적 오류 처리
+- **@java-reviewer** — SOLID, Spring 패턴, null 안전성
+- **@csharp-reviewer** — nullable 분석, async/await, C# 관용구
+- **@swift-reviewer** — Swift 동시성, 메모리 안전성, SwiftUI 패턴
+- **@database-reviewer** — 쿼리 성능, 파라미터화, 스키마 설계
+
+#### 신규 스킬 (4개)
+
+- **`/tdd`** — 완전한 TDD 강제: 레드-그린-리팩터 사이클, 프레임워크 참조 (Jest/pytest/Cargo/Go test)
+- **`/security-scan`** — 빠른 보안 점검: 시크릿 패턴 (sk-/ghp_/AKIA), CVE 감사, 입력 검증, 인증 확인
+- **`/coding-standards`** — 언어 공통 코딩 표준 참조 (명명, 함수, 오류, 안티패턴, SOLID). 모든 리뷰어 에이전트가 인용.
+- **`/skill-stocktake`** — 스킬 인벤토리 감사: 프론트매터 유효성, 템플릿 동기화, 스텁, 커버리지 갭
+
+#### 기존 핵심 에이전트 강화 (7개)
+
+| 에이전트 | 추가 내용 |
+|-------|----------------|
+| **@debugger** | 7개 언어 빌드 오류 해결 가이드 (Node/TS, Python, Rust, Go, Java, C#, Swift) |
+| **@security-reviewer** | 시크릿 탐지 정규식 패턴, JWT/세션/암호화 규칙, OWASP 주석 |
+| **@qa-tester** | Playwright Page Object Model 패턴, E2E 분류 테이블 |
+| **@writer** | CODEMAP 생성 템플릿 + 자동 업데이트 워크플로 |
+| **@code-reviewer** | D9 정규 코딩 표준 테이블 내장 |
+| **@test-engineer** | 프레임워크 감지 테이블, 커버리지 갭 프로토콜, flaky test 근본 원인 |
+| **@code-simplifier** | 복잡도 지표 테이블, 단순화 패턴, 안정성 예외 처리 |
+
+#### 기존 스킬 강화 (1개)
+
+- **`/remember`** — 품질 게이트 추가: 실행 가능성·지속성·고유성 3단계 필터로 저장 전 검증
+
+#### 인프라
+
+- **계층적 에이전트/스킬 임계값**: warn <20/18, info <28/22, silent ≥28/22 (하위 호환)
+- **트리뷰 카테고리 그룹화**: 에이전트 수 >20이면 "Core Agents" + "Language Reviewers" 자동 분리
+- **post-tool-use 훅** (`OMG_LINT_ON_EDIT=1`): 파일 편집 시 opt-in 타입체크/ESLint + `FILE_PATH` 위생 처리
+- **보안 패치**: hono/node-server CVE 수정, vitest 4.1.4 업그레이드, `.env*` `.gitignore` 추가
+
+---
 
 ### v1.0.5 (2026-04-10)
 

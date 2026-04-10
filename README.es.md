@@ -34,7 +34,7 @@
 
 **oh-my-githubcopilot (OMG)** lleva a **GitHub Copilot** el enfoque de orquestación multiagente que [oh-my-claudecode (OMC)](https://github.com/yeachan-heo/oh-my-claudecode) desarrolló para Claude Code.
 
-Si OMC potencia Claude Code mediante agentes especializados y automatización de flujos, OMG hace lo mismo dentro del agent mode de Copilot en VS Code. En lugar de depender de un único asistente para todo, OMG coordina **20 agentes especializados** y **18 habilidades reutilizables** a través de un servidor MCP para estructurar planificación, implementación, revisión y verificación.
+Si OMC potencia Claude Code mediante agentes especializados y automatización de flujos, OMG hace lo mismo dentro del agent mode de Copilot en VS Code. En lugar de depender de un único asistente para todo, OMG coordina **28 agentes especializados** y **22 habilidades reutilizables** a través de un servidor MCP para estructurar planificación, implementación, revisión y verificación.
 
 > **No es un fork ni una copia de OMC.** Es una implementación independiente construida desde cero para aprovechar las capacidades de personalización de agentes en GitHub Copilot (`.agent.md`, `.prompt.md`, `SKILL.md`, herramientas MCP), inspirada por la arquitectura multiagente de OMC.
 
@@ -105,30 +105,46 @@ OMG utiliza preguntas socráticas para detectar supuestos ocultos y aclarar el p
 
 ## Agentes
 
-OMG incluye **20 agentes especializados**, cada uno con un rol concreto y un nivel de acceso definido. Están declarados en `.github/agents/`.
+OMG incluye **28 agentes especializados**, cada uno con un rol concreto y un nivel de acceso definido. Están declarados en `.github/agents/`.
 
 | Agente | Rol | Acceso |
 |-------|------|--------|
 | **@omg-coordinator** | Orquestador principal de omg-autopilot, ralph y workflows de equipo | Full |
 | **@executor** | Implementación de código, features y corrección de bugs | Full |
-| **@debugger** | Análisis de causa raíz, stack traces y errores de build | Full |
+| **@debugger** | Análisis de causa raíz, stack traces y guía de build en 7 lenguajes | Full |
 | **@architect** | Análisis de arquitectura, diseño de sistema y revisión estructural | Read-only |
 | **@planner** | Planificación estratégica con flujo de entrevista | Plans only |
 | **@analyst** | Análisis de requisitos, detección de huecos y riesgos de alcance | Read-only |
 | **@verifier** | Verificación basada en evidencia y revisión de cobertura | Test runner |
-| **@code-reviewer** | Revisión de código con severidad y detección de defectos lógicos | Read-only |
-| **@security-reviewer** | Revisión OWASP, secretos, auth/authz y dependencias | Read-only |
+| **@code-reviewer** | Revisión de código con severidad y estándares de codificación canónicos | Read-only |
+| **@security-reviewer** | Revisión OWASP, detección de secretos (sk-/ghp_/AKIA), auth/authz | Read-only |
 | **@critic** | Revisión dura de planes y código antes del cierre | Read-only |
-| **@test-engineer** | Estrategia de testing, TDD y endurecimiento de flaky tests | Full |
+| **@test-engineer** | Estrategia de testing, TDD, detección de frameworks, flaky tests | Full |
 | **@designer** | Diseño UI/UX e implementación frontend | Full |
-| **@writer** | README, documentación API y documentación técnica | Full |
+| **@writer** | README, documentación API y generación de CODEMAP | Full |
 | **@tracer** | Trazado causal y validación de hipótesis con evidencia | Full |
 | **@scientist** | Análisis de datos, estadística y visualización | Read-only |
-| **@qa-tester** | Pruebas CLI con terminal integrado de VS Code, integración y E2E | Full |
+| **@qa-tester** | Pruebas CLI con terminal de VS Code, Playwright POM y E2E | Full |
 | **@git-master** | Commits atómicos, rebase y gestión del historial | Git only |
-| **@code-simplifier** | Simplificación de código y reducción de complejidad | Full |
+| **@code-simplifier** | Simplificación de código, métricas de complejidad y eliminación de redundancia | Full |
 | **@explore** | Búsqueda en el codebase, localización de archivos y mapeo | Read-only |
 | **@document-specialist** | Investigación de documentación externa y APIs | Read-only |
+
+
+### Agentes revisores de lenguaje — Tier 2 (8)
+
+Invoca con `@mention` para revisión de código por lenguaje:
+
+| Agente | Lenguaje | Reglas clave |
+|-------|----------|----------|
+| **@typescript-reviewer** | TypeScript | Modo strict, no-any, type safety |
+| **@python-reviewer** | Python | PEP 8, type hints, patrones idiomáticos |
+| **@rust-reviewer** | Rust | Ownership, borrow checker, unsafe justificado |
+| **@go-reviewer** | Go | Go idiomático, goroutine safety, manejo de errores |
+| **@java-reviewer** | Java | SOLID, patrones Spring, null safety |
+| **@csharp-reviewer** | C# | Análisis nullable, async/await, idiomas C# |
+| **@swift-reviewer** | Swift | Concurrencia Swift, seguridad de memoria, SwiftUI |
+| **@database-reviewer** | SQL/ORM | Rendimiento de consultas, parametrización, diseño de esquema |
 
 ---
 
@@ -270,8 +286,8 @@ Trailers disponibles: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scop
 |---------|----------------------|--------------------------|
 | Plataforma objetivo | Claude Code CLI | GitHub Copilot (VS Code) |
 | Instalación | paquete npm / marketplace de plugins | clonar repositorio + compilar MCP server |
-| Número de agentes | 19+ | 20 agentes especializados |
-| Skills | 10+ skills de workflow | 18 skills con disparadores por palabra clave |
+| Número de agentes | 19+ | 28 agentes (20 core + 8 revisores de lenguaje) |
+| Skills | 10+ skills de workflow | 22 skills con disparadores por palabra clave |
 | Gestión de estado | directorio `.omc/` | `.omc/` gestionado por MCP (misma ruta para compatibilidad con OMC) |
 | Multi-modelo | Codex/Gemini vía tmux CLI | análisis consultivo mediante `ccg` |
 | Configuración | `~/.claude/settings.json` | `.github/` + `.vscode/mcp.json` |
@@ -290,35 +306,60 @@ Trailers disponibles: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scop
 
 ## What's New
 
+### v1.1.0 (2026-04-10) — Integración ECC
+
+**Actualización mayor: integración de las mejores funcionalidades de ECC (Everything Claude Code) en OMG**
+
+#### Nuevos agentes — Tier de revisores de lenguaje (8)
+
+Cada agente incluye entre 13 y 21 reglas de estilo integradas:
+
+- **@typescript-reviewer** — modo strict, no-any, exhaustividad en unions
+- **@python-reviewer** — PEP 8, type hints, patrones idiomáticos
+- **@rust-reviewer** — ownership, borrow checker, unsafe justificado
+- **@go-reviewer** — Go idiomático, goroutine safety, manejo explícito de errores
+- **@java-reviewer** — SOLID, patrones Spring, null safety
+- **@csharp-reviewer** — análisis nullable, async/await, idiomas C#
+- **@swift-reviewer** — concurrencia Swift, seguridad de memoria, SwiftUI
+- **@database-reviewer** — rendimiento de consultas, parametrización, diseño de esquema
+
+#### Nuevas habilidades (4)
+
+- **`/tdd`** — TDD completo: ciclo Red-Green-Refactor, referencia de frameworks (Jest/pytest/Cargo/Go test)
+- **`/security-scan`** — Escaneo rápido de seguridad: patrones de secretos (sk-/ghp_/AKIA), auditoría CVE, validación de entrada, auth
+- **`/coding-standards`** — Estándares de codificación canónicos multi-lenguaje (nombres, funciones, errores, anti-patrones, SOLID)
+- **`/skill-stocktake`** — Auditoría de inventario de habilidades: frontmatter, sincronización de plantillas, stubs, cobertura
+
+#### Agentes core mejorados (7)
+
+| Agente | Qué se añadió |
+|-------|----------------|
+| **@debugger** | Guía de resolución de build en 7 lenguajes (Node/TS, Python, Rust, Go, Java, C#, Swift) |
+| **@security-reviewer** | Patrones regex de detección de secretos, reglas JWT/sesión/cripto, anotaciones OWASP |
+| **@qa-tester** | Patrón Playwright Page Object Model, tabla de clasificación E2E |
+| **@writer** | Plantilla de generación CODEMAP + flujo de actualización automática |
+| **@code-reviewer** | Tabla de estándares de codificación D9 integrada |
+| **@test-engineer** | Tabla de detección de frameworks, protocolo de gaps de cobertura, causas de flaky tests |
+| **@code-simplifier** | Tabla de métricas de complejidad, patrones de simplificación, excepciones de estabilidad |
+
+#### Habilidad mejorada (1)
+
+- **`/remember`** — Añadido quality gate: filtro de 3 preguntas (¿accionable? ¿durable? ¿único?) antes de guardar
+
+#### Infraestructura
+
+- **Umbrales escalonados de agentes/habilidades**: warn <20/18, info <28/22, silent ≥28/22 (compatible hacia atrás)
+- **Agrupación categorizada en árbol**: >20 agentes → "Core Agents" + "Language Reviewers" automáticamente
+- **Hook post-tool-use** (`OMG_LINT_ON_EDIT=1`): typecheck/ESLint opcional al editar + sanitización de FILE_PATH
+- **Parches de seguridad**: CVE de hono/node-server corregidos, vitest actualizado a 4.1.4, `.env*` añadido a `.gitignore`
+
+---
+
 ### v1.0.5 (2026-04-10)
 
-**Corrección de bug: Colisión de nombre de skill con Autopilot integrado de VS Code**
+**Bug fix: colisión del nombre de habilidad con el Autopilot integrado de VS Code**
 
-- **Renombrado**: El skill `/autopilot` ahora es `/omg-autopilot` para evitar conflictos con el modo de permisos "Autopilot (Preview)" de VS Code
-- **Corrección de YAML frontmatter**: Se eliminó el campo no soportado `allowed-tools` y se renombró `hint` a `argument-hint` según la especificación de VS Code en todos los archivos SKILL.md
-- **Causa raíz**: El nombre del skill `autopilot` activaba el cambio de modo de permisos interno de VS Code en lugar de cargar las instrucciones del skill OMG
-- **Alcance**: Directorios de skills, código del servidor MCP, definiciones de agentes, referencias cruzadas, tests y toda la documentación
-
----
-
-## Licencia
-
-MIT
-
----
-
-## Derechos de autor
-
-Copyright © 2026 jmstar85. All rights reserved.
-
-Todo el contenido de este repositorio — incluyendo, entre otros, código fuente, documentación, definiciones de agentes, definiciones de skills, implementación del servidor MCP, plantillas de prompts y archivos de configuración — es propiedad intelectual de **jmstar85** (propietario del repositorio). Queda estrictamente prohibida la reproducción, distribución o uso comercial no autorizado fuera de los términos de la licencia MIT.
-
----
-
-<div align="center">
-
-**Inspired by:** [oh-my-claudecode](https://github.com/yeachan-heo/oh-my-claudecode) by Yeachan Heo
-
-**Orquestación multiagente para GitHub Copilot.**
-
-</div>
+- **Renombrado**: habilidad `/autopilot` renombrada a `/omg-autopilot` para evitar colisión con el modo de permisos "Autopilot (Preview)" de VS Code
+- **Corrección de frontmatter YAML**: eliminado el campo `allowed-tools` no soportado de todos los SKILL.md; `hint` renombrado a `argument-hint` según la especificación de VS Code
+- **Causa raíz**: el nombre `autopilot` activaba el cambio interno de modo de permisos de VS Code en lugar de cargar las instrucciones del skill de OMG
+- **Alcance**: directorios de skills, código del servidor MCP, definiciones de agentes, referencias cruzadas, tests y toda la documentación

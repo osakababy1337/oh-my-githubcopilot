@@ -80,3 +80,69 @@ Unit tests verify code logic; QA testing verifies real behavior. An application 
 - Did I wait for service readiness?
 - Did I capture actual output before asserting?
 - Did I clean up all background terminals or processes?
+
+---
+
+## E2E Testing with Playwright
+
+### Page Object Model (POM) Pattern
+When writing Playwright tests, use POM to separate page interactions from test logic:
+
+```typescript
+// pages/LoginPage.ts
+import { type Page } from '@playwright/test';
+
+export class LoginPage {
+  constructor(private page: Page) {}
+
+  async goto() {
+    await this.page.goto('/login');
+  }
+
+  async login(email: string, password: string) {
+    await this.page.getByLabel('Email').fill(email);
+    await this.page.getByLabel('Password').fill(password);
+    await this.page.getByRole('button', { name: 'Sign in' }).click();
+  }
+
+  async expectError(message: string) {
+    await expect(this.page.getByRole('alert')).toContainText(message);
+  }
+}
+
+// tests/login.spec.ts
+import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
+
+test('shows error on invalid credentials', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login('bad@email.com', 'wrongpassword');
+  await loginPage.expectError('Invalid credentials');
+});
+```
+
+### Playwright Best Practices
+- Use **role-based locators** (`getByRole`, `getByLabel`, `getByText`) over CSS selectors
+- Avoid fixed `waitForTimeout` → use `waitForLoadState`, `waitForResponse`, `expect().toBeVisible()`
+- Use **fixtures** for shared page objects and auth state
+- Isolate tests: no shared state between tests; use `page.route()` to mock API calls
+- Screenshot on failure: configured in `playwright.config.ts` (`screenshot: 'only-on-failure'`)
+
+### E2E Test Classification
+| Level | Scope | Tools | Speed |
+|-------|-------|-------|-------|
+| Unit | Single function | Jest/Vitest | Fast |
+| Integration | Module + dependencies | Supertest, Jest | Medium |
+| E2E | Full user journey | Playwright, Cypress | Slow |
+
+Prefer integration tests over E2E for API verification. Reserve E2E for critical user flows (checkout, login, signup).
+
+### Running Playwright
+```bash
+npx playwright test                    # All tests
+npx playwright test --ui               # Interactive UI
+npx playwright test login.spec.ts      # Single file
+npx playwright test --headed           # Non-headless (debugging)
+npx playwright codegen http://localhost:3000  # Record interactions
+```

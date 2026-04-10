@@ -37,32 +37,46 @@ export function checkConventionFiles(rootDir: string): ConventionCheckResult[] {
     }
   }
 
-  // Check agents
+  // Check agents (tiered: warn < 20 core, info 20–27 extended, silent >= 28)
+  const CORE_AGENT_COUNT = 20;
+  const EXTENDED_AGENT_COUNT = 28;
   const agentsDir = path.join(rootDir, '.github', 'agents');
   if (!fs.existsSync(agentsDir)) {
     issues.push({ severity: 'error', message: 'Missing .github/agents/ directory', fix: 'Run "OMG: Initialize Workspace"' });
   } else {
     const agents = fs.readdirSync(agentsDir).filter(f => f.endsWith('.agent.md'));
-    if (agents.length < 20) {
+    if (agents.length < CORE_AGENT_COUNT) {
       issues.push({
         severity: 'warning',
-        message: `Found ${agents.length}/20 agent files in .github/agents/`,
+        message: `Found ${agents.length}/${CORE_AGENT_COUNT} agent files in .github/agents/`,
         fix: 'Run "OMG: Update Convention Files" to restore missing agents.',
+      });
+    } else if (agents.length < EXTENDED_AGENT_COUNT) {
+      issues.push({
+        severity: 'info',
+        message: `Found ${agents.length}/${EXTENDED_AGENT_COUNT} agent files — run "OMG: Update Convention Files" to get new extended agents.`,
       });
     }
   }
 
-  // Check skills
+  // Check skills (tiered: warn < 18 core, info 18–21 extended, silent >= 22)
+  const CORE_SKILL_COUNT = 18;
+  const EXTENDED_SKILL_COUNT = 22;
   const skillsDir = path.join(rootDir, '.github', 'skills');
   if (!fs.existsSync(skillsDir)) {
     issues.push({ severity: 'error', message: 'Missing .github/skills/ directory', fix: 'Run "OMG: Initialize Workspace"' });
   } else {
     const skills = fs.readdirSync(skillsDir, { withFileTypes: true }).filter(d => d.isDirectory());
-    if (skills.length < 18) {
+    if (skills.length < CORE_SKILL_COUNT) {
       issues.push({
         severity: 'warning',
-        message: `Found ${skills.length}/18 skill directories in .github/skills/`,
+        message: `Found ${skills.length}/${CORE_SKILL_COUNT} skill directories in .github/skills/`,
         fix: 'Run "OMG: Update Convention Files" to restore missing skills.',
+      });
+    } else if (skills.length < EXTENDED_SKILL_COUNT) {
+      issues.push({
+        severity: 'info',
+        message: `Found ${skills.length}/${EXTENDED_SKILL_COUNT} skill directories — run "OMG: Update Convention Files" to get new extended skills.`,
       });
     }
   }

@@ -132,3 +132,46 @@ For release readiness:
 - Does every issue cite file:line with severity and fix suggestion?
 - Is the verdict clear?
 - Did I note positive observations?
+
+---
+
+## Shared Coding Standards (D9 Canonical Reference)
+
+> These rules are the canonical baseline. For language-specific rules, invoke the appropriate `@{lang}-reviewer` agent.
+> See also: `/coding-standards` skill for the full reference.
+
+### Naming Conventions
+- **Variables/functions:** `camelCase` (JS/TS/Java), `snake_case` (Python/Rust/Go), `PascalCase` (C#)
+- **Classes/types/interfaces:** `PascalCase` — all languages
+- **Constants:** `SCREAMING_SNAKE_CASE` for module-level constants
+- **Booleans:** prefix with `is`, `has`, `can`, `should` (`isLoading`, `hasError`)
+- **Collections:** plural nouns (`users`, `errors`, not `userList`)
+- **Functions:** verb phrases (`getUser`, `validateEmail`, `sendNotification`)
+- **Avoid:** single-letter vars outside loops, abbreviations that save no keystrokes (`usr`, `idx`)
+
+### Function Design
+- Maximum length: 50 lines (guideline, not absolute)
+- Single responsibility: one function, one job
+- Max parameters: 3; beyond that, use an options object
+- Cyclomatic complexity: ≤ 10; above 15 is a refactor target
+
+### Error Handling
+- Never swallow errors silently: `catch (e) {}` is always wrong
+- Error messages must contain context: "Failed to fetch user" not "Failed"
+- Use typed errors in TypeScript: `class NotFoundError extends Error` not generic `throw new Error`
+- Propagate errors to the right level: don't `console.error` and continue; either handle or re-throw
+
+### Code Structure
+- No magic numbers: named constants only
+- Immutability-first: `const` over `let`, `readonly` properties, frozen objects where intent is clear
+- Early returns over deep nesting: max 3 levels of nesting before restructuring
+- No commented-out code: if it's dead, delete it; if it's needed, it should be in git history
+
+### Anti-Patterns to Flag
+| Pattern | Severity | Reason |
+|---------|----------|--------|
+| Mutable global state | HIGH | Unpredictable side effects |
+| Promise not awaited | HIGH | Unhandled async errors |
+| `any` in TypeScript | MEDIUM | Bypasses type safety |
+| `console.log` in production | LOW | Log noise, potential data leak |
+| `TODO` without issue link | LOW | Unreachable tech debt |
