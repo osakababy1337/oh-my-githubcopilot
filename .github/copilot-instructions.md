@@ -108,6 +108,39 @@ These keywords automatically activate the corresponding skill:
 - 2+ independent tasks should run in parallel when possible.
 - Run builds/tests in background when appropriate.
 
+## Interactive Hook System
+
+OMG uses `vscode_askQuestions` as its hook mechanism to pause workflows and collect structured user decisions at critical points. This replaces OMC's gateway-level interrupt hooks with VS Code-native structured input.
+
+### Global Rules
+- **ALWAYS use `vscode_askQuestions`** for user-facing decisions during skill workflows — never ask via plain chat text
+- Provide 3-5 contextual **options** with clear labels and descriptions
+- Mark the most likely option as `recommended: true`
+- Set `allowFreeformInput: true` unless the question is strictly binary (e.g., trust confirmation)
+- Use a unique `header` per hook point (e.g., `"interview-round-3"`, `"plan-approval"`)
+- Include progress context in the question text (ambiguity %, cycle count, etc.)
+
+### Skills with Hooks
+| Skill | Hook Points | Purpose |
+|-------|-------------|---------|
+| `/deep-interview` | Every interview round, challenges, spec approval, execution bridge | Structured Socratic questioning |
+| `/plan` | Interview questions, readiness gate, trade-offs, critic rejection, plan approval | Planning decisions |
+| `/ralplan` | Options selection, architect concerns, critic rejection, final approval | Consensus gates |
+| `/self-improve` | Repo selection, trust confirmation, goal interview, harness rules | Setup phase gates (loop runs autonomously) |
+| `/omg-autopilot` | Vague input redirect, spec confirmation, QA stuck, validation rejection | Critical decision points |
+
+### Hook Firing Principle
+Fire hooks when:
+1. **Ambiguity** — input is vague or multiple valid interpretations exist
+2. **Trade-offs** — competing options with significant consequences
+3. **Failure recovery** — repeated errors or reviewer rejections need user direction
+4. **Gate transitions** — moving between major phases (spec → plan → execution)
+
+Do NOT fire hooks for:
+- Routine agent delegation (let agents work autonomously)
+- Internal consensus loops (architect/critic can iterate without user)
+- Diagnostic steps (explore, search, analyze — just do it)
+
 ## Commit Protocol
 Use git trailers to preserve decision context in commit messages.
 Format: conventional commit subject line, optional body, then structured trailers.

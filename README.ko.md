@@ -454,6 +454,31 @@ Scope-risk: narrow
 
 ## What's New
 
+### v1.1.6 (2026-04-11) — 인터랙티브 Hook 시스템
+
+**OMC 동등 기능: `vscode_askQuestions`를 통한 워크플로 중간 사용자 의사결정**
+
+5개의 핵심 스킬이 의사결정 게이트에서 구조화된 객관식 옵션을 표시합니다. OMC의 게이트웨이 레벨 인터럽트 훅과 동일한 방식으로, VS Code Copilot 내에서 네이티브로 동작합니다.
+
+#### Hook이 추가된 스킬
+
+| 스킬 | Hook 포인트 |
+|------|------------|
+| `/deep-interview` | 매 인터뷰 라운드 (모호성 %) · 스펙 승인 · 실행 경로 선택 |
+| `/plan` | 인터뷰 질문 · 준비 완료 게이트 · 트레이드오프 선택 · 크리틱 거부 · 플랜 승인 |
+| `/ralplan` | 옵션 선택 · 아키텍트 우려사항 · 크리틱 거부 · 최종 승인 |
+| `/self-improve` | 타겟 리포 · 신뢰 확인 · 목표 인터뷰 · 하네스 규칙 (셋업 단계만 — 루프는 자율 실행) |
+| `/omg-autopilot` | 모호한 입력 리다이렉트 · 스펙 확인 · QA 반복 실패 · 검증 거부 |
+
+#### 동작 방식
+
+- 각 의사결정 게이트에서 스킬이 3~5개 선택지, `recommended` 기본값, `allowFreeformInput: true`와 함께 `vscode_askQuestions`를 호출
+- 사용자가 옵션을 선택하거나 직접 입력하면 워크플로가 그에 따라 계속 진행
+- 모든 hook은 추적을 위해 고유한 `header` 사용 (예: `"interview-round-3"`, `"ralplan-approval"`)
+- 전역 hook 프로토콜은 `copilot-instructions.md → Interactive Hook System`에 문서화됨
+
+---
+
 ### v1.1.0 (2026-04-10) — ECC 통합
 
 **대규모 업그레이드: ECC(Everything Claude Code)의 핵심 기능을 OMG에 통합**

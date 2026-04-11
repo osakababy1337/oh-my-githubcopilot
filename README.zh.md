@@ -406,6 +406,31 @@ Scope-risk: narrow
 
 ## What's New
 
+### v1.1.6 (2026-04-11) — 交互式 Hook 系统
+
+**OMC 同等功能：通过 `vscode_askQuestions` 实现工作流中途用户决策**
+
+五个核心技能现在会在决策节点弹出结构化多选提示，与 OMC 的网关级中断钩子完全对等——并且原生运行在 VS Code Copilot 中。
+
+#### 已添加 Hook 的技能
+
+| 技能 | Hook 触发点 |
+|------|-------------|
+| `/deep-interview` | 每轮访谈（含歧义 %）· 规格确认 · 执行路径选择 |
+| `/plan` | 访谈问题 · 就绪门控 · 权衡选择 · 批评者拒绝 · 方案审批 |
+| `/ralplan` | 选项选择 · 架构师关注点 · 批评者拒绝 · 最终审批 |
+| `/self-improve` | 目标仓库 · 信任确认 · 目标访谈 · 约束规则（仅设置阶段——循环自主运行） |
+| `/omg-autopilot` | 模糊输入重定向 · 规格确认 · QA 重复失败 · 验证拒绝 |
+
+#### 工作原理
+
+- 在每个决策节点，技能调用 `vscode_askQuestions`，提供 3~5 个带标签的选项、`recommended` 默认值和 `allowFreeformInput: true`
+- 用户选择选项或自由输入后，工作流按响应继续执行
+- 所有 hook 调用使用唯一的 `header` 以便追踪（如 `"interview-round-3"`、`"ralplan-approval"`）
+- 全局 hook 协议记录在 `copilot-instructions.md → Interactive Hook System`
+
+---
+
 ### v1.1.0 (2026-04-10) — ECC 集成
 
 **重大升级：将 ECC（Everything Claude Code）的精华功能合并至 OMG**

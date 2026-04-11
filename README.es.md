@@ -404,6 +404,31 @@ Trailers disponibles: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scop
 
 ## What's New
 
+### v1.1.6 (2026-04-11) — Sistema de Hooks Interactivos
+
+**Paridad con OMC: decisiones de usuario en mitad del workflow mediante `vscode_askQuestions`**
+
+Cinco habilidades core ahora lanzan prompts de selección múltiple estructurados en los puntos de decisión, emulando los hooks de interrupción a nivel de gateway de OMC — de forma nativa dentro de VS Code Copilot.
+
+#### Habilidades con Hooks
+
+| Habilidad | Puntos de Hook |
+|-----------|----------------|
+| `/deep-interview` | Cada ronda de entrevista (con ambigüedad %) · Aprobación de spec · Selección de ruta de ejecución |
+| `/plan` | Preguntas de entrevista · Gate de preparación · Selección de trade-offs · Rechazo de crítico · Aprobación de plan |
+| `/ralplan` | Selección de opciones · Preocupaciones de arquitecto · Rechazo de crítico · Aprobación final |
+| `/self-improve` | Repo objetivo · Confirmación de confianza · Entrevista de objetivo · Reglas de harness (solo setup — el loop corre autónomo) |
+| `/omg-autopilot` | Redirección de entrada vaga · Confirmación de spec · Recuperación de QA atascado · Rechazo de validación |
+
+#### Cómo Funciona
+
+- En cada gate de decisión la habilidad llama a `vscode_askQuestions` con 3–5 opciones etiquetadas, un `recommended` por defecto y `allowFreeformInput: true`
+- El usuario selecciona una opción (o escribe respuesta libre) — el workflow continúa según la respuesta
+- Todas las llamadas de hook usan un `header` único para trazabilidad (p.ej. `"interview-round-3"`, `"ralplan-approval"`)
+- Protocolo global de hooks documentado en `copilot-instructions.md → Interactive Hook System`
+
+---
+
 ### v1.1.0 (2026-04-10) — Integración ECC
 
 **Actualización mayor: integración de las mejores funcionalidades de ECC (Everything Claude Code) en OMG**
