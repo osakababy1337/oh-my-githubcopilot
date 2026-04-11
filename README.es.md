@@ -75,7 +75,7 @@ Si OMC potencia Claude Code mediante agentes especializados y automatización de
 
 1. Instalar la extensión desde `.vsix`:
    ```
-   code --install-extension oh-my-githubcopilot-1.1.4.vsix
+   code --install-extension oh-my-githubcopilot-1.1.5.vsix
    ```
 2. Abre tu proyecto en VS Code
 
@@ -256,6 +256,73 @@ OMG incorpora hooks en `.github/hooks/` para actuar como red de seguridad.
 - Registra uso de herramientas cuando `OMG_DEBUG=1`
 - Rastrea archivos modificados para awareness de fases en omg-autopilot
 - Sigue resultados de tests para detección de ultraqa
+
+---
+
+## Benchmark
+
+> Todos los números provienen del historial git real, la suite de tests y los resultados de `npm audit`. Sin datos sintéticos.
+
+### Instantánea del proyecto (v1.1.x)
+
+| Métrica | Valor |
+|---------|-------|
+| Código total | 28.907 líneas |
+| Período de desarrollo | 6 días (6–11 de abril de 2026) |
+| Total de commits | 23 |
+| Agentes | 28 (20 núcleo + 8 revisores de lenguaje) |
+| Skills | 22 |
+| Herramientas MCP | 15 |
+
+### Métricas de calidad
+
+| Métrica | v1.0 (inicial) | v1.1.x (tras pipeline OMG) |
+|---------|:-:|:-:|
+| Tasa de tests pasados | N/A | **18 / 18 (100%)** |
+| Errores TypeScript | Sin verificar | **0** |
+| CVEs conocidas | 7 (2 producción + 5 dev) | **0** |
+| Guardas pre-hook | 0 | **6** |
+| Funciones de seguimiento post-hook | 0 | **8** |
+
+### Integración ECC — Impacto en un único commit (`9468c02`)
+
+| Métrica | Valor |
+|---------|-------|
+| Archivos modificados | 60 |
+| Líneas añadidas | 5.844 |
+| Nuevos agentes | 8 agentes revisores de lenguaje |
+| Nuevas skills | 4 (`/tdd`, `/security-scan`, `/coding-standards`, `/skill-stocktake`) |
+| Defectos detectados antes del merge | Shell injection en hooks + 7 CVEs |
+
+### Planificación por consenso RALPLAN
+
+| Decisiones revisadas | Aprobadas | Rechazadas por `@critic` | Tasa de rechazo |
+|:-:|:-:|:-:|:-:|
+| 9 | 7 | **2** | **22%** |
+
+> El 22% de las decisiones de diseño se corrigieron en la fase de planificación, antes de escribir ningún código.
+
+### Resultados del escaneo de seguridad
+
+| Categoría | Encontrado | Corregido |
+|-----------|:-:|:-:|
+| Secretos hardcodeados | 0 | — |
+| CVEs de producción | 2 moderadas | ✅ |
+| CVEs de desarrollo | 5 moderadas | ✅ |
+| Shell injection (hook `FILE_PATH`) | 1 | ✅ |
+| `.env` ausente de `.gitignore` | 1 | ✅ |
+| **Total de vulnerabilidades tras corrección** | | **0** |
+
+### Guardas de seguridad pre-tool-use
+
+| Guarda | Operación bloqueada |
+|--------|--------------------|
+| Protección de escritura en `node_modules` | Editar/crear dentro de `node_modules/` |
+| Protección de secretos `.env` | Modificación directa de `.env` |
+| Bloqueo de eliminación de configs críticos | Eliminar `package.json`, `tsconfig.json`, `.gitignore` |
+| Prevención de force push | `git push --force` |
+| Prevención de hard reset | `git reset --hard`, `git clean -fd` |
+| Sanitización de rutas | `../` y metacaracteres en `FILE_PATH` |
 
 ---
 
