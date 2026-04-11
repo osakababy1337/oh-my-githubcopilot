@@ -28,6 +28,16 @@
   <img src="https://img.shields.io/badge/GitHub%20Copilot-Orchestrated-blue?style=for-the-badge&logo=github" alt="GitHub Copilot Orchestrated" />
 </p>
 
+<p align="center">
+  <a href="https://youtu.be/PoOEpo8O-b0">
+    <img src="https://img.youtube.com/vi/PoOEpo8O-b0/maxresdefault.jpg" alt="Watch OMG in Action on YouTube" width="720" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://youtu.be/PoOEpo8O-b0">▶ Watch OMG in Action on YouTube</a>
+</p>
+
 ---
 
 ## What is OMG?
@@ -65,7 +75,7 @@ Where OMC supercharges Claude Code with specialized agents and workflow automati
 
 1. Install the extension from `.vsix`:
    ```
-   code --install-extension oh-my-githubcopilot-1.1.2.vsix
+   code --install-extension oh-my-githubcopilot-1.1.3.vsix
    ```
 2. Open your project in VS Code
 

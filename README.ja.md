@@ -28,6 +28,16 @@
   <img src="https://img.shields.io/badge/GitHub%20Copilot-Orchestrated-blue?style=for-the-badge&logo=github" alt="GitHub Copilot Orchestrated" />
 </p>
 
+<p align="center">
+  <a href="https://youtu.be/PoOEpo8O-b0">
+    <img src="https://img.youtube.com/vi/PoOEpo8O-b0/maxresdefault.jpg" alt="YouTube で OMG のデモを見る" width="720" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://youtu.be/PoOEpo8O-b0">▶ YouTube で OMG のデモを見る</a>
+</p>
+
 ---
 
 ## OMG とは？
@@ -65,7 +75,7 @@ OMC が専門エージェントとワークフロー自動化によって Claude
 
 1. `.vsix` ファイルから拡張機能をインストール:
    ```
-   code --install-extension oh-my-githubcopilot-1.1.2.vsix
+   code --install-extension oh-my-githubcopilot-1.1.3.vsix
    ```
 2. VS Code でプロジェクトを開きます
 
