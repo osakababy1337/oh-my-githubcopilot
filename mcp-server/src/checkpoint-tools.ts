@@ -81,6 +81,12 @@ export function registerCheckpointTools(server: McpServer): void {
 
       safeWriteFile(getCheckpointPath(), JSON.stringify(checkpoint, null, 2));
 
+      // Reset byte counter so the next accumulation cycle starts from 0
+      const bytesResetPath = getContextBytesPath();
+      if (fs.existsSync(bytesResetPath)) {
+        safeWriteFile(bytesResetPath, "0");
+      }
+
       // Clear the trigger if it exists
       const triggerPath = getTriggerPath();
       if (fs.existsSync(triggerPath)) {

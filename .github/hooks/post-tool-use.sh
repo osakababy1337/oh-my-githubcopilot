@@ -34,6 +34,7 @@ OUTPUT_BYTES=$(printf '%s' "$TOOL_OUTPUT" | wc -c | tr -d ' ')
 CALL_BYTES=$((INPUT_BYTES + OUTPUT_BYTES))
 
 # Read current accumulation
+# Note: read-modify-write is not atomic. Acceptable because VS Code hooks run serially.
 ACCUMULATED=$(cat "$CONTEXT_BYTES_FILE" 2>/dev/null || echo 0)
 ACCUMULATED=$((ACCUMULATED + CALL_BYTES))
 echo "$ACCUMULATED" > "$CONTEXT_BYTES_FILE" 2>/dev/null

@@ -30,7 +30,9 @@ export function readMemory(): MemoryStore {
   if (!data) return { entries: [] };
   const result = safeJsonParse(data);
   if (!result.ok) return { entries: [] };
-  return result.data as unknown as MemoryStore;
+  const store = result.data as Record<string, unknown>;
+  if (!Array.isArray(store.entries)) return { entries: [] };
+  return { entries: store.entries } as MemoryStore;
 }
 
 function writeMemory(store: MemoryStore): void {
@@ -103,6 +105,7 @@ export function registerMemoryTools(server: McpServer): void {
         results = results.filter((e) => e.category === category);
       }
 
+      const totalMatches = results.length;
       results = results.slice(0, limit);
 
       return {
@@ -111,7 +114,8 @@ export function registerMemoryTools(server: McpServer): void {
             type: "text" as const,
             text: JSON.stringify({
               query,
-              total: results.length,
+              total: totalMatches,
+              returned: results.length,
               entries: results.map((e) => ({
                 key: e.key,
                 value: e.value,

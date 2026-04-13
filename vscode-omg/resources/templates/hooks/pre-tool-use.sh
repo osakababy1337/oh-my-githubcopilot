@@ -38,7 +38,7 @@ fi
 
 # Guard: prevent force push
 if [ "$TOOL_NAME" = "runInTerminal" ]; then
-  if echo "$TOOL_INPUT" | grep -qE 'git\s+push\s+.*--force'; then
+  if echo "$TOOL_INPUT" | grep -qE 'git\s+push\s+.*(--force([^a-zA-Z0-9_-]|$)|-f([^a-zA-Z0-9_-]|$))' && ! echo "$TOOL_INPUT" | grep -qE '\-\-force-with-lease'; then
     echo '{"decision": "deny", "reason": "Force push is not allowed. Use --force-with-lease if necessary."}'
     exit 0
   fi
@@ -46,7 +46,7 @@ fi
 
 # Guard: prevent destructive git operations
 if [ "$TOOL_NAME" = "runInTerminal" ]; then
-  if echo "$TOOL_INPUT" | grep -qE 'git\s+(reset\s+--hard|clean\s+-fd)'; then
+  if echo "$TOOL_INPUT" | grep -qE 'git\s+(reset\s+.*--hard|clean\s+.*-[a-z]*f|checkout\s+--\s+\.)'; then
     echo '{"decision": "deny", "reason": "Destructive git operations require manual confirmation."}'
     exit 0
   fi
