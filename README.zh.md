@@ -75,7 +75,7 @@
 
 1. 通过 `.vsix` 文件安装扩展:
    ```
-   code --install-extension oh-my-githubcopilot-1.1.7.vsix
+  code --install-extension oh-my-githubcopilot-1.1.8.vsix
    ```
 2. 在 VS Code 中打开你的项目
 
@@ -405,6 +405,24 @@ Scope-risk: narrow
 ---
 
 ## What's New
+
+### v1.1.8 (2026-04-13) — 上下文保留与内存增强
+
+**显著提升长流程执行的稳定性**
+
+- Tier-2 内存能力增强：
+  - 新增 `omg_search_memory`（跨 key/value/category/tags 检索）
+  - `omg_write_memory` 新增 `tags` 支持
+  - 对历史内存数据保持向后兼容
+- Tier-3 上下文压力协议：
+  - `omg_checkpoint`, `omg_restore_checkpoint`, `omg_context_status`
+  - 基于 Tool I/O 累积字节的自动 checkpoint 提示
+  - 通过 `OMG_CONTEXT_THRESHOLD` 配置阈值（默认 400KB）
+- Hook 安全与生命周期强化：
+  - checkpoint 后重置计数器，避免 advisory 循环
+  - 强化 force push 检测（`--force`, `-f`），允许 `--force-with-lease`
+  - 扩展高风险 git 命令拦截规则
+- 在 `copilot-instructions.md` 中新增会话恢复与启动恢复规则
 
 ### v1.1.7 (2026-04-12) — 交互式 Hook 系统
 

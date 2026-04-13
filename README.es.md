@@ -75,7 +75,7 @@ Si OMC potencia Claude Code mediante agentes especializados y automatización de
 
 1. Instalar la extensión desde `.vsix`:
    ```
-   code --install-extension oh-my-githubcopilot-1.1.7.vsix
+  code --install-extension oh-my-githubcopilot-1.1.8.vsix
    ```
 2. Abre tu proyecto en VS Code
 
@@ -403,6 +403,24 @@ Trailers disponibles: `Constraint`, `Rejected`, `Directive`, `Confidence`, `Scop
 ---
 
 ## What's New
+
+### v1.1.8 (2026-04-13) — Preservación de contexto y mejora de memoria
+
+**Gran mejora de confiabilidad para flujos largos**
+
+- Mejoras Tier-2 en memoria MCP:
+  - Nuevo `omg_search_memory` (búsqueda en key/value/category/tags)
+  - Soporte de `tags` en `omg_write_memory`
+  - Compatibilidad retroactiva con entradas de memoria existentes
+- Nuevo protocolo Tier-3 de presión de contexto:
+  - `omg_checkpoint`, `omg_restore_checkpoint`, `omg_context_status`
+  - Advisory automático de checkpoint basado en bytes acumulados de Tool I/O
+  - Umbral configurable con `OMG_CONTEXT_THRESHOLD` (por defecto 400KB)
+- Endurecimiento de seguridad y ciclo de hooks:
+  - Se corrige bucle de advisory reseteando contador tras checkpoint
+  - Mejor detección de force push (`--force`, `-f`) permitiendo `--force-with-lease`
+  - Cobertura ampliada para comandos git destructivos
+- Reglas de recuperación de sesión agregadas en `copilot-instructions.md`
 
 ### v1.1.7 (2026-04-12) — Sistema de Hooks Interactivos
 

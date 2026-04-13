@@ -75,7 +75,7 @@ OMC가 Claude Code를 특화된 에이전트와 워크플로 자동화로 확장
 
 1. `.vsix` 파일로 익스텐션 설치:
    ```
-   code --install-extension oh-my-githubcopilot-1.1.7.vsix
+  code --install-extension oh-my-githubcopilot-1.1.8.vsix
    ```
 2. VS Code에서 프로젝트를 엽니다
 
@@ -453,6 +453,24 @@ Scope-risk: narrow
 ---
 
 ## What's New
+
+### v1.1.8 (2026-04-13) — 컨텍스트 보존 & 메모리 고도화
+
+**장기 실행 워크플로 안정성 대폭 강화**
+
+- Tier-2 메모리 기능 고도화:
+  - `omg_search_memory` 추가 (key/value/category/tags 통합 검색)
+  - `omg_write_memory`에 `tags` 지원 추가
+  - 기존 메모리 데이터와의 하위 호환 처리 강화
+- Tier-3 컨텍스트 압력 대응 프로토콜 추가:
+  - `omg_checkpoint`, `omg_restore_checkpoint`, `omg_context_status`
+  - Tool I/O 누적 바이트 기반 자동 checkpoint advisory
+  - `OMG_CONTEXT_THRESHOLD`로 임계치 설정 가능 (기본 400KB)
+- Hook 안전성 및 라이프사이클 개선:
+  - checkpoint 후 카운터 리셋으로 반복 advisory 루프 방지
+  - force push 감지 강화 (`--force`, `-f`), `--force-with-lease`는 허용
+  - 파괴적 git 명령 차단 패턴 확장
+- `copilot-instructions.md`에 세션 복구/시작 시 checkpoint 복원 규칙 추가
 
 ### v1.1.7 (2026-04-12) — 인터랙티브 Hook 시스템
 

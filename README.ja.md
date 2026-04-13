@@ -75,7 +75,7 @@ OMC が専門エージェントとワークフロー自動化によって Claude
 
 1. `.vsix` ファイルから拡張機能をインストール:
    ```
-   code --install-extension oh-my-githubcopilot-1.1.7.vsix
+  code --install-extension oh-my-githubcopilot-1.1.8.vsix
    ```
 2. VS Code でプロジェクトを開きます
 
@@ -409,6 +409,24 @@ Scope-risk: narrow
 ---
 
 ## What's New
+
+### v1.1.8 (2026-04-13) — コンテキスト保持 & メモリ強化
+
+**長時間ワークフローの信頼性を大幅に強化**
+
+- Tier-2 メモリ機能を強化:
+  - `omg_search_memory` を追加（key/value/category/tags 横断検索）
+  - `omg_write_memory` に `tags` サポートを追加
+  - 既存メモリエントリとの後方互換を確保
+- Tier-3 コンテキスト圧力プロトコルを追加:
+  - `omg_checkpoint`, `omg_restore_checkpoint`, `omg_context_status`
+  - Tool I/O 累積バイトに基づく自動 checkpoint advisory
+  - `OMG_CONTEXT_THRESHOLD` で閾値設定可能（既定 400KB）
+- Hook 安全性とライフサイクルを改善:
+  - checkpoint 後にカウンタをリセットし、advisory ループを防止
+  - force push 検知を強化（`--force`, `-f`）、`--force-with-lease` は許可
+  - 破壊的な git 操作ガードを拡張
+- `copilot-instructions.md` にセッション復元ルールを追加
 
 ### v1.1.7 (2026-04-12) — インタラクティブ Hook システム
 
